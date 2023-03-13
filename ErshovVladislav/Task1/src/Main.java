@@ -176,13 +176,15 @@ public class Main {
         // 4 phase
         Collections.sort(finalNodeNumbers);
 
+        double finalTime = ((double) (System.currentTimeMillis() - time)) / 100;
+
         // Print sorted array
         printNodeArray("Answer:", finalNodeNumbers, rank, size); //$NON-NLS-1$
 
         if (rank == 0) {
             System.out.println("Size: " + size); //$NON-NLS-1$
-            System.out.println("Time:"); //$NON-NLS-1$
-            System.out.println(((double) (System.currentTimeMillis() - time)) / 100);
+            System.out.println("Full time without read initialArray and print answer:"); //$NON-NLS-1$
+            System.out.println(finalTime);
         }
 
         MPI.Finalize();

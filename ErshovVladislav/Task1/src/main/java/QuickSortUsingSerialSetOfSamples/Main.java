@@ -1,3 +1,5 @@
+package QuickSortUsingSerialSetOfSamples;
+
 import mpi.MPI;
 
 import java.io.File;

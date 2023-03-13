@@ -11,7 +11,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class Main {
 
-    private final static String FILE_NAME_WITH_INITIAL_ARRAY = "../resources/initialArray.txt"; //$NON-NLS-1$
+    private final static String FILE_NAME_WITH_INITIAL_ARRAY = "../../../resources/initialArray.txt"; //$NON-NLS-1$
 
     public static void main(String[] args) {
         // fillInitialArray(FILE_NAME_WITH_INITIAL_ARRAY);

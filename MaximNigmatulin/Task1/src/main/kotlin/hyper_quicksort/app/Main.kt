@@ -13,6 +13,11 @@ fun main(args: Array<String>) {
     val input = "./resources/unsorted.txt"
     val output = "./resources/sorted.txt"
 
+    if (MPI.COMM_WORLD.Rank() == 0) {
+        val testArray = read(input)
+        println(testArray.joinToString(" "))
+    }
+
     val data: Array<Int> = read(input)
     println(data.joinToString(" "))
 
@@ -20,8 +25,6 @@ fun main(args: Array<String>) {
 
     val rank = MPI.COMM_WORLD.Rank()
     val size = MPI.COMM_WORLD.Size()
-
-    val isMaster = rank == 0
 
     var hypercubeDimension = 1
     var validation = 2
@@ -59,8 +62,8 @@ fun main(args: Array<String>) {
         }
     }
 
-    val currentBufferCount = sendcounts[rank]
-    val currentBuffer = Array(currentBufferCount) { 0 }
+    var currentBufferCount = sendcounts[rank]
+    var currentBuffer = Array(currentBufferCount) { 0 }
     MPI.COMM_WORLD.Scatterv(
         data,
         0,
@@ -74,30 +77,25 @@ fun main(args: Array<String>) {
         0
     )
 
-    println("rank-buffer mapping:")
-    println("$rank : ${currentBuffer.joinToString(" ")}")
-
     var currentCommunicator = MPI.COMM_WORLD
-    for (iteration in 1..1) {
-//        for (iteration in 1..hypercubeDimension) {
+    for (iteration in 1..hypercubeDimension) {
         val pivotBuffer = IntArray(1) { -1 }
-        if (rank == 0) {
+        if (currentCommunicator.Rank() == 0) {
             pivotBuffer[0] = choosePivot(currentBuffer)
         }
-        println("$rank : ${currentBuffer.joinToString(" ")}")
-
         currentCommunicator.Bcast(pivotBuffer, 0, 1, MPI.INT, 0)
+        println("$rank : start buffer=${currentBuffer.joinToString(" ")}")
 
-        println("$rank : pivot = ${pivotBuffer.first()}")
         val pivot = pivotBuffer.first()
         println("$rank : pivot = $pivot")
 
         // array splitting
-        val (midIndex, lowLen, highLen) = partitionWithPivot(currentBuffer, pivot)
+        val (midIndex, lowArray, highArray) = partitionWithPivot(currentBuffer, pivot)
+        val lowLen = lowArray.size
+        val highLen = highArray.size
 
         val shouldPassLargerList = hc.shouldPassLargerList(iteration, rank)
         val commLink = hc.getCommLink(iteration, rank)
-
 
         // ---------------- exchange sizes ----------------
         var recvLenBuffer = IntArray(1) { -1 }
@@ -140,12 +138,10 @@ fun main(args: Array<String>) {
         // ---------------- /exchange sizes ----------------
 
         // init new array
-//        val recvBufferLen = if (shouldPassLargerList) highLen else lowLen
         val recvBuffer = IntArray(recvLen) { -1 }
-        println("$rank : recv buffer: ${recvBuffer.joinToString(" ")}")
 
         // send array
-        println("$rank : ${currentBuffer.joinToString(" ")}")
+        println("$rank : current buf : ${currentBuffer.joinToString(" ")}")
 
         if (shouldPassLargerList) {
             println("(sending hi) $rank : midIndex=$midIndex, hiLen=$highLen, lowLen=$lowLen")
@@ -164,7 +160,6 @@ fun main(args: Array<String>) {
                 222
             )
         } else {
-            println("(sending lo) $rank : midIndex=$midIndex, hiLen=$highLen, lowLen=$lowLen")
             MPI.COMM_WORLD.Sendrecv(
                 currentBuffer.toIntArray(),
                 0,
@@ -181,16 +176,22 @@ fun main(args: Array<String>) {
             )
         }
 
-        val mergedBuffer: Array<Int>
-        if (shouldPassLargerList) {
-            mergedBuffer = recvBuffer.filterNot { it == -1 }.toTypedArray() + currentBuffer
+        val mergedBuffer: Array<Int> = if (shouldPassLargerList) {
+            recvBuffer.toTypedArray() + lowArray
         } else {
-            mergedBuffer = currentBuffer + recvBuffer.filterNot { it == -1 }.toTypedArray()
+            highArray + recvBuffer.toTypedArray()
         }
 
         println("$rank : merged buffer: ${mergedBuffer.joinToString(" ")}")
+        currentBuffer = mergedBuffer
+        currentBufferCount = recvLen
 
-        MPI.Finalize()
-
+        val nextGroup = hc.getNextGroup(iteration, rank)
+        val nextCommunicator = currentCommunicator.Split(nextGroup, rank)
+        currentCommunicator = nextCommunicator
     }
+
+    println("$rank : final buffer: ${currentBuffer.joinToString(" ")}")
+
+    MPI.Finalize()
 }

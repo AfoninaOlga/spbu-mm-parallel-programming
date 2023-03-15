@@ -1,6 +1,6 @@
 package hyper_quicksort.seq_quicksort
 
-private fun <T> Array<T>.swap(index1: Int, index2: Int) {
+fun <T> Array<T>.swap(index1: Int, index2: Int) {
     val tmp = this[index1]
     this[index1] = this[index2]
     this[index2] = tmp
@@ -29,10 +29,10 @@ fun <T : Comparable<T>> partition(a: Array<T>, left: Int, right: Int): Int {
     return j
 }
 
-fun <T : Comparable<T>> partitionWithPivot(a: Array<T>, pivot: T): Triple<Int, Int, Int> {
+inline fun <reified T : Comparable<T>> partitionWithPivot(a: Array<T>, pivot: T): Triple<Int, Array<T>, Array<T>> {
     var i = 0
 
-    // found first greater then pivot
+    // find first greater then pivot
     while (i < a.size && a[i] < pivot) {
         i++
     }
@@ -49,8 +49,11 @@ fun <T : Comparable<T>> partitionWithPivot(a: Array<T>, pivot: T): Triple<Int, I
         }
         i++
     }
-    val highLen = a.size - lowLen
-    return Triple(midIndex, lowLen, highLen)
+    return Triple(
+        midIndex,
+        a.slice(0 until lowLen).toTypedArray(),
+        a.slice(lowLen until a.size).toTypedArray()
+    )
 }
 
 fun <T : Comparable<T>> quicksortBackend(a: Array<T>, l: Int, r: Int) {

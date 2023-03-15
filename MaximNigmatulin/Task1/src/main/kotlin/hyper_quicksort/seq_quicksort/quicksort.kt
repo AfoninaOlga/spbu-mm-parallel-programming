@@ -6,8 +6,12 @@ private fun <T> Array<T>.swap(index1: Int, index2: Int) {
     this[index2] = tmp
 }
 
+fun <T : Comparable<T>> choosePivot(a: Array<T>): T {
+    return a[a.size / 2]
+}
+
 fun <T : Comparable<T>> partition(a: Array<T>, left: Int, right: Int): Int {
-    val pivot = a[(left + right) / 2]
+    val pivot = choosePivot(a)
     var i = left
     var j = right
 
@@ -25,6 +29,29 @@ fun <T : Comparable<T>> partition(a: Array<T>, left: Int, right: Int): Int {
     return j
 }
 
+fun <T : Comparable<T>> partitionWithPivot(a: Array<T>, pivot: T): Triple<Int, Int, Int> {
+    var i = 0
+
+    // found first greater then pivot
+    while (i < a.size && a[i] < pivot) {
+        i++
+    }
+
+    var lowLen = i
+    var midIndex = i
+
+    // splitting array into [x | x <= pivot], [x | x > pivot]
+    while (i < a.size) {
+        if (a[i] <= pivot) {
+            a.swap(i, midIndex)
+            midIndex++
+            lowLen++
+        }
+        i++
+    }
+    val highLen = a.size - lowLen
+    return Triple(midIndex, lowLen, highLen)
+}
 
 fun <T : Comparable<T>> quicksortBackend(a: Array<T>, l: Int, r: Int) {
     if (l < r) {
@@ -37,4 +64,3 @@ fun <T : Comparable<T>> quicksortBackend(a: Array<T>, l: Int, r: Int) {
 fun <T : Comparable<T>> quicksort(a: Array<T>) {
     quicksortBackend(a, 0, a.size - 1)
 }
-

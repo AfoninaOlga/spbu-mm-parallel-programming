@@ -1,6 +1,8 @@
 package hyper_quicksort.app
 
+import hyper_quicksort.input_output.generateUnsorted
 import hyper_quicksort.input_output.read
+import hyper_quicksort.input_output.write
 import hyper_quicksort.mpi_qucksort.*
 import hyper_quicksort.seq_quicksort.choosePivot
 import hyper_quicksort.seq_quicksort.partitionWithPivot
@@ -13,15 +15,10 @@ private fun Int.wrap() = IntArray(1) { this }
 private fun IntArray.unwrap() = first()
 
 fun main(args: Array<String>) {
+    val (input, output) = args.takeLast(n = 2)
     MPI.Init(args)
 
-    val input = "./resources/unsorted.txt"
-//    val output = "./resources/sorted.txt"
-
-    if (MPI.COMM_WORLD.Rank() == 0) {
-        val testArray = read(input)
-        println(testArray.joinToString(" "))
-    }
+    generateUnsorted(input, 1_000_000, 1_000_000)
 
     val rank = MPI.COMM_WORLD.Rank()
     val worldSize = MPI.COMM_WORLD.Size()
@@ -132,6 +129,8 @@ fun main(args: Array<String>) {
     if (rank == 0) {
         println("mpi quicksort  : " + mergedArray.joinToString(" "))
         println("builtin method : " + data.sorted().joinToString(" "))
+
+        write(output, mergedArray.joinToString(" "))
     }
 
     MPI.Finalize()

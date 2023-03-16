@@ -18,18 +18,9 @@ val mpjStarterJar = files("$mpjHome${sep}lib${sep}starter.jar")
 val mpjJar = files("$mpjHome${sep}lib${sep}mpj.jar")
 val mpjClassPath = sourceSets.main.get().runtimeClasspath - mpjJar
 
-
-// TODO: change positional args to string args
-val (numberOfProcesses, inputFilename, outputFilename) = (project.properties["args"] as? String? ?: "")
-    .split(" ")
-    .filterNot { it.isBlank() }
-    .let {
-        Triple(
-            it.getOrElse(0) { "1" },
-            listOfNotNull(it.getOrNull(1)),
-            listOfNotNull(it.getOrNull(2))
-        )
-    }
+val numberOfProcesses = project.properties["numProcesses"] as? String? ?: "1"
+val inputFilename = project.properties["inputFilename"] as? String? ?: ""
+val outputFilename = project.properties["outputFilename"] as? String? ?: ""
 
 dependencies {
     implementation(mpjJar)

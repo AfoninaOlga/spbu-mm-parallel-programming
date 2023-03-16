@@ -4,6 +4,7 @@ import hyper_quicksort.input_output.read
 import hyper_quicksort.mpi_qucksort.Hypercube
 import hyper_quicksort.seq_quicksort.choosePivot
 import hyper_quicksort.seq_quicksort.partitionWithPivot
+import mpi.Group.Translate_ranks
 import mpi.MPI
 import kotlin.math.pow
 
@@ -79,11 +80,45 @@ fun main(args: Array<String>) {
 
     var currentCommunicator = MPI.COMM_WORLD
     for (iteration in 1..hypercubeDimension) {
+        println("ITERATION $iteration")
+
+        // ---------------- choose pivot ----------------
+
         val pivotBuffer = IntArray(1) { -1 }
-        if (currentCommunicator.Rank() == 0) {
+        val translated =
+            Translate_ranks(MPI.COMM_WORLD.group, IntArray(size) { it }, currentCommunicator.group).filterNot { it == -1 }
+        println(
+            "ORIG: ${IntArray(MPI.NUM_OF_PROCESSORS) { it + 1 }.joinToString(" ")}, translated: ${
+                translated.joinToString(
+                    " "
+                )
+            }"
+        )
+
+        for (groupProcessor in translated) {
+            if (currentCommunicator.Rank() != groupProcessor) {
+                continue
+            }
+            if (currentBuffer.isEmpty()) {
+                continue
+            }
             pivotBuffer[0] = choosePivot(currentBuffer)
+            println("success! iter: $iteration $rank, ${pivotBuffer[0]}")
+
+            break
         }
+        MPI.COMM_WORLD.Barrier()
+
+        // ---------------- /choose pivot ----------------
+
         currentCommunicator.Bcast(pivotBuffer, 0, 1, MPI.INT, 0)
+        if (pivotBuffer.first() == -1) {
+            // buffer is empty, nothing to do
+            if (currentBuffer.isNotEmpty()) {
+                throw RuntimeException("$rank has -1 for pivot!")
+            }
+            continue
+        }
         println("$rank : start buffer=${currentBuffer.joinToString(" ")}")
 
         val pivot = pivotBuffer.first()

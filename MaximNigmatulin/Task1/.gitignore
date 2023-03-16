@@ -121,6 +121,3 @@ fabric.properties
 
 # Ignore Gradle build artifacts
 build
-
-# Ignore IO
-resources/*

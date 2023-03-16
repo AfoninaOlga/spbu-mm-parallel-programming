@@ -17,6 +17,10 @@ private fun IntArray.unwrap() = first()
 
 fun main(args: Array<String>) {
     val (input, output) = args.takeLast(n = 2)
+    if (args.size != 5) {
+        throw IllegalArgumentException("Wrong number of arguments! Expected 5, received ${args.size}")
+    }
+
     MPI.Init(args)
 
     generateUnsorted(input, 1_000_000, 1_000_000)
@@ -78,7 +82,6 @@ fun main(args: Array<String>) {
             continue
         }
 
-        // array splitting
         val (midIndex, lowArray, highArray) = partitionWithPivot(currentBuffer, pivot)
 
         val shouldPassLargerList = hc.shouldPassLargerList(iteration, rank)
@@ -118,7 +121,6 @@ fun main(args: Array<String>) {
     }
 
     quicksort(currentBuffer)
-    println("$rank : final (sorted) buffer: ${currentBuffer.joinToString(" ")}")
 
     val mergedArray = mergeParts(
         partsCount = worldSize,
@@ -127,9 +129,6 @@ fun main(args: Array<String>) {
     )
 
     if (rank == 0) {
-        println("mpi quicksort  : " + mergedArray.joinToString(" "))
-        println("builtin method : " + data.sorted().joinToString(" "))
-
         write(output, mergedArray.joinToString(" "))
     }
 

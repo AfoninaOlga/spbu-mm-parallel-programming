@@ -11,9 +11,7 @@ repositories {
 
 val appMainClass = "hyper_quicksort.app.MainKt"
 
-// TODO: fix hardcoded value
-// val mpjHome = System.getenv("MPJ_HOME") ?: error("Specify `MPJ_HOME` environment variable")
-val mpjHome = "/Users/emax/Data/mpj"
+val mpjHome = System.getenv("MPJ_HOME") ?: error("Specify `MPJ_HOME` environment variable")
 val mpjStarterJar = files("$mpjHome${sep}lib${sep}starter.jar")
 val mpjJar = files("$mpjHome${sep}lib${sep}mpj.jar")
 val mpjClassPath = sourceSets.main.get().runtimeClasspath - mpjJar

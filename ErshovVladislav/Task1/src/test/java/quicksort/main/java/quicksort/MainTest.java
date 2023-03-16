@@ -73,25 +73,6 @@ public final class MainTest {
 
     ///region FUZZER: SECURITY for method fillInitialArray(java.lang.String)
 
-    /**
-     * @utbot.classUnderTest {@link Main}
-     * @utbot.methodUnderTest {@link Main#fillInitialArray(String)}
-     */
-    @Test
-    @org.junit.Ignore(value = "Disabled due to sandbox")
-    public void testFillInitialArrayWithNonEmptyString() {
-        /* This test fails because method [main.java.quicksort.Main.fillInitialArray] produces [java.security.AccessControlException: access denied ("java.io.FilePermission" "The file with the given fileName cannot be written to" "write")]
-            java.base/java.security.AccessControlContext.checkPermission(AccessControlContext.java:485)
-            java.base/java.security.AccessController.checkPermission(AccessController.java:1068)
-            java.base/java.lang.SecurityManager.checkPermission(SecurityManager.java:416)
-            java.base/java.lang.SecurityManager.checkWrite(SecurityManager.java:847)
-            java.base/java.io.FileOutputStream.<init>(FileOutputStream.java:223)
-            java.base/java.io.FileOutputStream.<init>(FileOutputStream.java:155)
-            java.base/java.io.FileWriter.<init>(FileWriter.java:82)
-            main.java.quicksort.Main.fillInitialArray(Main.java:252) */
-    }
-    ///endregion
-
     ///region OTHER: EXPLICITLY THROWN UNCHECKED EXCEPTIONS for method fillInitialArray(java.lang.String)
 
     @Test(expected = IllegalArgumentException.class)
@@ -298,24 +279,6 @@ public final class MainTest {
     ///endregion
 
     ///region FUZZER: SECURITY for method getInitialArrayFromFile(java.lang.String)
-
-    /**
-     * @utbot.classUnderTest {@link Main}
-     * @utbot.methodUnderTest {@link Main#getInitialArrayFromFile(String)}
-     */
-    @Test
-    @org.junit.Ignore(value = "Disabled due to sandbox")
-    public void testGetInitialArrayFromFileWithNonEmptyString() {
-        /* This test fails because method [main.java.quicksort.Main.getInitialArrayFromFile] produces [java.security.AccessControlException: access denied ("java.io.FilePermission" "File with the given fileName not found" "read")]
-            java.base/java.security.AccessControlContext.checkPermission(AccessControlContext.java:485)
-            java.base/java.security.AccessController.checkPermission(AccessController.java:1068)
-            java.base/java.lang.SecurityManager.checkPermission(SecurityManager.java:416)
-            java.base/java.lang.SecurityManager.checkRead(SecurityManager.java:756)
-            java.base/java.io.FileInputStream.<init>(FileInputStream.java:146)
-            java.base/java.util.Scanner.<init>(Scanner.java:639)
-            main.java.quicksort.Main.getInitialArrayFromFile(Main.java:375) */
-    }
-    ///endregion
 
     ///region OTHER: EXPLICITLY THROWN UNCHECKED EXCEPTIONS for method getInitialArrayFromFile(java.lang.String)
 

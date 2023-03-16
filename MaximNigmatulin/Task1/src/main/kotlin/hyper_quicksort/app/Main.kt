@@ -12,7 +12,7 @@ fun main(args: Array<String>) {
     MPI.Init(args)
 
     val input = "./resources/unsorted.txt"
-    val output = "./resources/sorted.txt"
+//    val output = "./resources/sorted.txt"
 
     if (MPI.COMM_WORLD.Rank() == 0) {
         val testArray = read(input)
@@ -123,7 +123,7 @@ fun main(args: Array<String>) {
         val commLink = hc.getCommLink(iteration, rank)
 
         // ---------------- exchange sizes ----------------
-        val recvLenBuffer = IntArray(1) { -1 }
+        val recvLenBuffer = IntArray(1)
         val highLenBuffer = IntArray(1) { highLen }
         val lowLenBuffer = IntArray(1) { lowLen }
 
@@ -163,7 +163,7 @@ fun main(args: Array<String>) {
         // ---------------- /exchange sizes ----------------
 
         // init new array
-        val recvBuffer = IntArray(recvLen) { -1 }
+        val recvBuffer = IntArray(recvLen)
 
         // send array
         if (shouldPassLargerList) {
@@ -205,25 +205,39 @@ fun main(args: Array<String>) {
         }
 
         currentBuffer = mergedBuffer
-        currentBufferCount = recvLen
+        currentBufferCount = currentBuffer.size
 
         val nextGroup = hc.getNextGroup(iteration, rank)
         val nextCommunicator = currentCommunicator.Split(nextGroup, rank)
         currentCommunicator = nextCommunicator
     }
 
+    // TODO: use my own quicksort
     currentBuffer.sort()
     println("$rank : final (sorted) buffer: ${currentBuffer.joinToString(" ")}")
 
     // ---------------- gather values ----------------
     MPI.COMM_WORLD.Barrier()
 
-    val gatheredSizes = IntArray(size) { -1 }
-    val currentBufferCountBuffer = IntArray(1) { currentBufferCount + 1 }
-    println("$rank : ${currentBufferCountBuffer.joinToString(" ")}")
+    val gatheredSizes = IntArray(size)
+    val finalDisplacements = IntArray(size)
+    val currentBufferCountBuffer = IntArray(1) { currentBufferCount }
     MPI.COMM_WORLD.Gather(currentBufferCountBuffer, 0, 1, MPI.INT, gatheredSizes, 0, 1, MPI.INT, 0)
-    if (rank == 0)
+    if (rank == 0) {
         println(gatheredSizes.joinToString(" "))
+
+        finalDisplacements[0] = 0
+        for (i in 1 until size) {
+            finalDisplacements[i] = finalDisplacements[i - 1] + gatheredSizes[i - 1]
+        }
+    }
+    val mergedArray = IntArray(data.size)
+    MPI.COMM_WORLD.Gatherv(currentBuffer.toIntArray(), 0, currentBufferCount, MPI.INT, mergedArray, 0, gatheredSizes, finalDisplacements, MPI.INT, 0)
+
+    if (rank == 0) {
+        println("mpi quicksort  :" + mergedArray.joinToString(" "))
+        println("builtin method:" + data.sorted().joinToString(" "))
+    }
 
     MPI.Finalize()
 }

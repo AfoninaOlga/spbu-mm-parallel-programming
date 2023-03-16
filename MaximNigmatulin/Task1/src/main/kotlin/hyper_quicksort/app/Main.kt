@@ -6,6 +6,7 @@ import hyper_quicksort.input_output.write
 import hyper_quicksort.mpi_qucksort.*
 import hyper_quicksort.seq_quicksort.choosePivot
 import hyper_quicksort.seq_quicksort.partitionWithPivot
+import hyper_quicksort.seq_quicksort.quicksort
 import mpi.Group.Translate_ranks
 import mpi.Intracomm
 import mpi.MPI
@@ -116,8 +117,7 @@ fun main(args: Array<String>) {
         currentCommunicator = nextCommunicator
     }
 
-    // TODO: use my own quicksort
-    currentBuffer.sort()
+    quicksort(currentBuffer)
     println("$rank : final (sorted) buffer: ${currentBuffer.joinToString(" ")}")
 
     val mergedArray = mergeParts(

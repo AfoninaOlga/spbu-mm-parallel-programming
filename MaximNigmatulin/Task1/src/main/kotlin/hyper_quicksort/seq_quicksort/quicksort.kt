@@ -11,7 +11,7 @@ fun <T : Comparable<T>> choosePivot(a: Array<T>): T {
 }
 
 fun <T : Comparable<T>> partition(a: Array<T>, left: Int, right: Int): Int {
-    val pivot = choosePivot(a)
+    val pivot = a[(left + right) / 2]
     var i = left
     var j = right
 
@@ -22,11 +22,11 @@ fun <T : Comparable<T>> partition(a: Array<T>, left: Int, right: Int): Int {
         while (a[j] > pivot) {
             j--
         }
-        if (i >= j) break
-        a.swap(i++, j--)
+        if (i <= j) {
+            a.swap(i++, j--)
+        }
     }
-
-    return j
+    return i
 }
 
 inline fun <reified T : Comparable<T>> partitionWithPivot(a: Array<T>, pivot: T): Triple<Int, Array<T>, Array<T>> {
@@ -57,13 +57,18 @@ inline fun <reified T : Comparable<T>> partitionWithPivot(a: Array<T>, pivot: T)
 }
 
 fun <T : Comparable<T>> quicksortBackend(a: Array<T>, l: Int, r: Int) {
-    if (l < r) {
-        val q = partition(a, l, r)
-        quicksortBackend(a, l, q)
-        quicksortBackend(a, q + 1, r)
+    val q = partition(a, l, r)
+    if (l < q - 1) {
+        quicksortBackend(a, l, q - 1)
+    }
+    if (q < r) {
+        quicksortBackend(a, q, r)
     }
 }
 
 fun <T : Comparable<T>> quicksort(a: Array<T>) {
+    if (a.isEmpty()) {
+        return
+    }
     quicksortBackend(a, 0, a.size - 1)
 }

@@ -16,9 +16,6 @@ private fun IntArray.unwrap() = first()
 
 fun main(args: Array<String>) {
     val (input, output) = args.takeLast(n = 2)
-    if (args.size != 5) {
-        throw IllegalArgumentException("Wrong number of arguments! Expected 5, received ${args.size}")
-    }
 
     MPI.Init(args)
 

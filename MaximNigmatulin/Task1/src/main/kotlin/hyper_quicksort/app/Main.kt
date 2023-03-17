@@ -33,15 +33,22 @@ fun main(args: Array<String>) {
         validation = 2.0.pow(hypercubeDimension).toInt()
     }
 
-    if (validation != worldSize) {
-        if (rank == 0) {
-            throw IllegalArgumentException("Fatal: Num of dims is not a power of 2: got $worldSize")
-        }
+    val data = read(input)
+
+    if (worldSize == 1) {
+        quicksort(data)
+        write(output, data.joinToString(" "))
         MPI.Finalize()
         return
     }
 
-    val data = read(input)
+    if (validation != worldSize) {
+        if (rank == 0) {
+            throw IllegalArgumentException("Fatal: this num of cores is not supported: got $worldSize")
+        }
+        MPI.Finalize()
+        return
+    }
 
     if (data.size < worldSize) {
         if (rank == 0) {

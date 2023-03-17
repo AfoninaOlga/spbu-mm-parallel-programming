@@ -15,8 +15,8 @@ private fun Int.wrap() = IntArray(1) { this }
 private fun IntArray.unwrap() = first()
 
 fun main(args: Array<String>) {
-    val (input, output, numLen) = args.takeLast(n = 3)
-    if (args.size != 6) {
+    val (input, output) = args.takeLast(n = 2)
+    if (args.size != 5) {
         throw IllegalArgumentException("Wrong number of arguments! Expected 5, received ${args.size}")
     }
 
@@ -25,12 +25,7 @@ fun main(args: Array<String>) {
     val rank = MPI.COMM_WORLD.Rank()
     val worldSize = MPI.COMM_WORLD.Size()
 
-    var data: Array<Int> = Array(numLen.toInt()) { 0 }
-    if (rank == 0) {
-        data = read(input)
-    }
-
-    MPI.COMM_WORLD.Bcast(data.toIntArray(), 0, data.size, MPI.INT, 0)
+    val data = read(input)
 
     var hypercubeDimension = 1
     var validation = 2

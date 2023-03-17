@@ -19,7 +19,6 @@ val mpjClassPath = sourceSets.main.get().runtimeClasspath - mpjJar
 val numberOfProcesses = project.properties["numProcesses"] as? String? ?: "1"
 val inputFilename = project.properties["inputFilename"] as? String? ?: ""
 val outputFilename = project.properties["outputFilename"] as? String? ?: ""
-val numLen = project.properties["numLen"] as? String? ?: ""
 
 dependencies {
     implementation(mpjJar)
@@ -38,8 +37,7 @@ tasks.withType<JavaExec> {
             listOf("-cp", mpjClassPath.asPath) +
             listOf("-np", numberOfProcesses) +
             inputFilename +
-            outputFilename +
-            numLen
+            outputFilename
 
     dependsOn("classes")
 }

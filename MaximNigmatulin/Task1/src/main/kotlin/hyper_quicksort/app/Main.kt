@@ -1,6 +1,5 @@
 package hyper_quicksort.app
 
-import hyper_quicksort.input_output.generateUnsorted
 import hyper_quicksort.input_output.read
 import hyper_quicksort.input_output.write
 import hyper_quicksort.mpi_qucksort.*
@@ -26,10 +25,6 @@ fun main(args: Array<String>) {
     val rank = MPI.COMM_WORLD.Rank()
     val worldSize = MPI.COMM_WORLD.Size()
 
-    if (rank == 0) {
-        generateUnsorted(input, 1_000_000, -1_000_000, numLen.toInt())
-    }
-
     var data: Array<Int> = Array(numLen.toInt()) { 0 }
     if (rank == 0) {
         data = read(input)
@@ -46,7 +41,7 @@ fun main(args: Array<String>) {
     }
 
     if (validation != worldSize) {
-        print("Num of dims is not right")
+        println("Num of dims is not right")
         MPI.Finalize()
         return
     }

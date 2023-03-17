@@ -15,10 +15,10 @@ fun write(fileName: String, data: String) {
     File(fileName).writeText(data)
 }
 
-fun generateUnsorted(outFile: String, nNumbers: Int, upperLimit: Int) {
+fun generateUnsorted(outFile: String, nNumbers: Int, lowerLimit: Int, upperLimit: Int) {
     val fileWriter = FileWriter(outFile)
     for (i in 0 until nNumbers) {
-        val num = (0..upperLimit).random()
+        val num = (lowerLimit..upperLimit).random()
         fileWriter.write("$num ")
     }
     val num = (0..upperLimit).random()

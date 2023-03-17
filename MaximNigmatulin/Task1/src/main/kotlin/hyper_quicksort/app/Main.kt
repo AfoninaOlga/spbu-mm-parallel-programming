@@ -23,7 +23,7 @@ fun main(args: Array<String>) {
 
     MPI.Init(args)
 
-    generateUnsorted(input, 1_000_000, 1_000_000)
+    generateUnsorted(input, 1_000_000, -1_000_000, 1_000_000)
 
     val rank = MPI.COMM_WORLD.Rank()
     val worldSize = MPI.COMM_WORLD.Size()
@@ -74,11 +74,7 @@ fun main(args: Array<String>) {
     for (iteration in 1..hypercubeDimension) {
         val pivot = broadcastPivot(worldSize, currentCommunicator, currentBuffer)
 
-        if (pivot == -1) {
-            // buffer is empty, nothing to do
-            if (currentBuffer.isNotEmpty()) {
-                throw RuntimeException("$rank has -1 for pivot!")
-            }
+        if (currentBuffer.isEmpty()) {
             continue
         }
 

@@ -16,21 +16,26 @@ private fun Int.wrap() = IntArray(1) { this }
 private fun IntArray.unwrap() = first()
 
 fun main(args: Array<String>) {
-    val (input, output) = args.takeLast(n = 2)
-    if (args.size != 5) {
+    val (input, output, numLen) = args.takeLast(n = 3)
+    if (args.size != 6) {
         throw IllegalArgumentException("Wrong number of arguments! Expected 5, received ${args.size}")
     }
 
     MPI.Init(args)
 
-    generateUnsorted(input, 1_000_000, -1_000_000, 1_000_000)
-
     val rank = MPI.COMM_WORLD.Rank()
     val worldSize = MPI.COMM_WORLD.Size()
 
-    val data: Array<Int> = read(input)
+    if (rank == 0) {
+        generateUnsorted(input, 1_000_000, -1_000_000, numLen.toInt())
+    }
 
-    MPI.COMM_WORLD.Barrier()
+    var data: Array<Int> = Array(numLen.toInt()) { 0 }
+    if (rank == 0) {
+        data = read(input)
+    }
+
+    MPI.COMM_WORLD.Bcast(data.toIntArray(), 0, data.size, MPI.INT, 0)
 
     var hypercubeDimension = 1
     var validation = 2
@@ -137,9 +142,9 @@ private fun mergeParts(
     currentPart: Array<Int>
 ): IntArray {
     val partsSizes = IntArray(partsCount)
-    val currentBufferCountBuffer = IntArray(1) { currentPart.size }
+    val currentBufferCountBuffer = currentPart.size.wrap()
     MPI.COMM_WORLD.intArrayGather(
-        sendBuffer = currentBufferCountBuffer, sendCount = 1,
+        sendBuffer = currentBufferCountBuffer,
         recvBuffer = partsSizes, recvCount = 1
     )
 

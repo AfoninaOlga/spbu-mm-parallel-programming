@@ -2,13 +2,13 @@ package hyper_quicksort.input_output
 
 import java.io.File
 import java.io.FileWriter
-
+import java.io.InputStream
 
 fun read(fileName: String): Array<Int> {
-    return File(fileName)
-        .readText()
-        .split(" ")
-        .map { it.toInt() }.toTypedArray()
+    val inputStream: InputStream = File(fileName).inputStream()
+    val lineList = mutableListOf<Int>()
+    inputStream.bufferedReader().forEachLine { lineList.add(it.toInt()) }
+    return lineList.toTypedArray()
 }
 
 fun write(fileName: String, data: String) {
@@ -19,9 +19,7 @@ fun generateUnsorted(outFile: String, nNumbers: Int, lowerLimit: Int, upperLimit
     val fileWriter = FileWriter(outFile)
     for (i in 0 until nNumbers) {
         val num = (lowerLimit..upperLimit).random()
-        fileWriter.write("$num ")
+        fileWriter.write("$num\n")
     }
-    val num = (0..upperLimit).random()
-    fileWriter.write("$num")
     fileWriter.close()
 }

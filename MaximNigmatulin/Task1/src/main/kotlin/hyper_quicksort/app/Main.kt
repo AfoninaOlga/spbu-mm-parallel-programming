@@ -25,8 +25,6 @@ fun main(args: Array<String>) {
     val rank = MPI.COMM_WORLD.Rank()
     val worldSize = MPI.COMM_WORLD.Size()
 
-    val data = read(input)
-
     var hypercubeDimension = 1
     var validation = 2
 
@@ -36,7 +34,21 @@ fun main(args: Array<String>) {
     }
 
     if (validation != worldSize) {
-        println("Num of dims is not right")
+        if (rank == 0) {
+            throw IllegalArgumentException("Fatal: Num of dims is not a power of 2: got $worldSize")
+        }
+        MPI.Finalize()
+        return
+    }
+
+    val data = read(input)
+
+    if (data.size < worldSize) {
+        if (rank == 0) {
+            quicksort(data)
+            println("Warning: data size (${data.size}) is too small, sorted sequentially. Consider lowering core num (now $worldSize)")
+            write(output, data.joinToString(" "))
+        }
         MPI.Finalize()
         return
     }
@@ -68,10 +80,6 @@ fun main(args: Array<String>) {
     var currentCommunicator = MPI.COMM_WORLD
     for (iteration in 1..hypercubeDimension) {
         val pivot = broadcastPivot(worldSize, currentCommunicator, currentBuffer)
-
-        if (currentBuffer.isEmpty()) {
-            continue
-        }
 
         val (midIndex, lowArray, highArray) = partitionWithPivot(currentBuffer, pivot)
 

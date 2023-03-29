@@ -2,7 +2,7 @@
 
 ### Использование средствами Java
 
-- Рекомендуемая Java https://download.bell-sw.com/java/11.0.18+10/bellsoft-jdk11.0.18+10-windows-amd64-full.msi
+- Рекомендуемая Java https://download.bell-sw.com/java/17.0.6+10/bellsoft-jdk17.0.6+10-windows-amd64-full.msi
 
 #### Сборка
 - Из папки `src` запустить:

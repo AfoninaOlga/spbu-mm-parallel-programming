@@ -10,8 +10,6 @@ import java.util.concurrent.Semaphore;
  */
 public class Consumer implements Runnable {
 
-    /** Consumer id. */
-    private final long id;
     /** Consumer name. */
     private final String name;
     /** Consumer stop checking flag. */
@@ -32,8 +30,7 @@ public class Consumer implements Runnable {
     public Consumer(Stack<String> productBuffer, Semaphore mutex) {
         // TODO: проверить mutex, что он Semaphore(1)
         Thread thread = new Thread(this, "consumer");
-        this.id = thread.getId();
-        this.name = "consumer_" + id;
+        this.name = "consumer_" + thread.getId();
         this.productBuffer = productBuffer;
         this.mutex = mutex;
 
@@ -45,15 +42,6 @@ public class Consumer implements Runnable {
      */
     private void extractProduct() {
         this.extractedProduct = productBuffer.pop();
-    }
-
-    /**
-     * Get consumer id.
-     *
-     * @return consumer id
-     */
-    public long getId() {
-        return id;
     }
 
     @Override

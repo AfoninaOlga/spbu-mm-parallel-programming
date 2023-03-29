@@ -10,8 +10,6 @@ import java.util.concurrent.Semaphore;
  */
 public class Producer implements Runnable {
 
-    /** Producer id. */
-    private final long id;
     /** Producer name. */
     private final String name;
     /** Producer stop checking flag. */
@@ -34,21 +32,11 @@ public class Producer implements Runnable {
     public Producer(Stack<String> productBuffer, Semaphore mutex) {
         // TODO: проверить mutex, что он Semaphore(1)
         Thread thread = new Thread(this, "producer");
-        this.id = thread.getId();
-        this.name = "producer_" + id;
+        this.name = "producer_" + thread.getId();
         this.productBuffer = productBuffer;
         this.mutex = mutex;
 
         thread.start();
-    }
-
-    /**
-     * Get manufacturer id.
-     *
-     * @return manufacturer id
-     */
-    public long getId() {
-        return id;
     }
 
     /**

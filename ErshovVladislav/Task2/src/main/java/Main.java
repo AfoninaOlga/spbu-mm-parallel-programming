@@ -11,9 +11,19 @@ import java.util.concurrent.Semaphore;
 
 public class Main {
 
-    public static void main(String[] args) throws InterruptedException, IOException {
-        int numOfProducers = Integer.parseInt(args[0]);
-        int numOfConsumers = Integer.parseInt(args[1]);
+    public static void main(String[] args) throws InterruptedException, IOException, IllegalArgumentException {
+        if (args == null || args.length < 2 || args[0] == null || args[1] == null) {
+            throw new IllegalArgumentException("Number of producers and consumers entered incorrectly");
+        }
+
+        int numOfProducers;
+        int numOfConsumers;
+        try {
+            numOfProducers = Integer.parseInt(args[0]);
+            numOfConsumers = Integer.parseInt(args[1]);
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("Number of producers and consumers entered incorrectly");
+        }
 
         Stack<String> productBuffer = new Stack<>();
         // A special case of a semaphore is a mutex.

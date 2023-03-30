@@ -29,7 +29,13 @@ public class Producer implements Runnable {
      * @param productBuffer product buffer where products are extracted from
      * @param mutex         mutex for this manufacturer
      */
-    public Producer(Stack<String> productBuffer, Semaphore mutex) {
+    public Producer(Stack<String> productBuffer, Semaphore mutex) throws IllegalArgumentException {
+        if (productBuffer == null) {
+            throw new IllegalArgumentException("Product buffer can't be null");
+        } else if (mutex == null) {
+            throw new IllegalArgumentException("Mutex can't be null");
+        }
+
         // TODO: проверить mutex, что он Semaphore(1)
         Thread thread = new Thread(this, "producer");
         this.name = "producer_" + thread.getId();
@@ -42,14 +48,24 @@ public class Producer implements Runnable {
     /**
      * Put produced product into productBuffer on first place.
      */
-    private void putProduct() {
+    private void putProduct() throws IllegalArgumentException {
+        if (productBuffer == null) {
+            throw new IllegalArgumentException("Product buffer can't be null");
+        }
+
         producedProduct = name + ":product_" + numberProducedProduct;
         productBuffer.add(producedProduct);
         numberProducedProduct++;
     }
 
     @Override
-    public void run() {
+    public void run() throws IllegalArgumentException {
+        if (productBuffer == null) {
+            throw new IllegalArgumentException("Product buffer can't be null");
+        } else if (mutex == null) {
+            throw new IllegalArgumentException("Mutex can't be null");
+        }
+
         try {
             while (true) {
                 mutex.acquire();

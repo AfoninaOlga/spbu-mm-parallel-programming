@@ -15,7 +15,7 @@ public class Consumer implements Runnable {
     /** Consumer stop checking flag. */
     private boolean isConsumerStopped = false;
     /** Extracted product. */
-    private String extractedProduct;
+    private Object extractedProduct;
     /** Product buffer. */
     private final Stack<String> productBuffer;
     /** Mutex for this consumer. */
@@ -27,7 +27,13 @@ public class Consumer implements Runnable {
      * @param productBuffer product buffer where products are extracted from
      * @param mutex         mutex for this consumer
      */
-    public Consumer(Stack<String> productBuffer, Semaphore mutex) {
+    public Consumer(Stack<String> productBuffer, Semaphore mutex) throws IllegalArgumentException {
+        if (productBuffer == null) {
+            throw new IllegalArgumentException("Product buffer can't be null");
+        } else if (mutex == null) {
+            throw new IllegalArgumentException("Mutex can't be null");
+        }
+
         // TODO: проверить mutex, что он Semaphore(1)
         Thread thread = new Thread(this, "consumer");
         this.name = "consumer_" + thread.getId();
@@ -45,7 +51,13 @@ public class Consumer implements Runnable {
     }
 
     @Override
-    public void run() {
+    public void run() throws IllegalArgumentException {
+        if (productBuffer == null) {
+            throw new IllegalArgumentException("Product buffer can't be null");
+        } else if (mutex == null) {
+            throw new IllegalArgumentException("Mutex can't be null");
+        }
+
         try {
             while (true) {
                 mutex.acquire();

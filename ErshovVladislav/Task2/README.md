@@ -15,7 +15,7 @@ javac -d bin -sourcepath ../src ershov/vladislav/Main.java
 
 - Из папки `src`
 ```
-java -classpath ./bin ershov.vladislav.Main numOfProducers numOfConsumers
+java -classpath ./bin main.java.Main numOfProducers numOfConsumers
 ```
 где `numOfProducers` это количество производителей, а `numOfConsumers` это количество потребителей
 

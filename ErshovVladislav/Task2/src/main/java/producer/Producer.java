@@ -1,4 +1,4 @@
-package ershov.vladislav.producer;
+package main.java.producer;
 
 import java.util.Stack;
 import java.util.concurrent.Semaphore;

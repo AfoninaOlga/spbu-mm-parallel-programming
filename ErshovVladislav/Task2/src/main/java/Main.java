@@ -1,7 +1,7 @@
-package ershov.vladislav;
+package main.java;
 
-import ershov.vladislav.consumer.Consumer;
-import ershov.vladislav.producer.Producer;
+import main.java.consumer.Consumer;
+import main.java.producer.Producer;
 
 import java.io.BufferedReader;
 import java.io.IOException;

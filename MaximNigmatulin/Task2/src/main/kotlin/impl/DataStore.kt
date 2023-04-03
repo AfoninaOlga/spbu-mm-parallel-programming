@@ -1,17 +1,16 @@
 package pc.impl
 
-import pc.interfaces.DataStoreProtocol
 import java.util.Queue
 import java.util.LinkedList
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
 
-class DataStore<T> : DataStoreProtocol<T> {
+class DataStore<T> {
     private val queue: Queue<T> = LinkedList()
     private val lock = ReentrantLock()
     private val emptyQueueCondition = lock.newCondition()
 
-    override fun push(obj: T) {
+    fun push(obj: T) {
         lock.withLock {
             this.queue.add(obj)
             emptyQueueCondition.signal()
@@ -24,14 +23,14 @@ class DataStore<T> : DataStoreProtocol<T> {
         }
     }
 
-    override fun pop(): T {
+    fun pop(): T {
         lock.withLock {
             waitOnEmpty()
             return queue.remove()
         }
     }
 
-    override fun expose(): List<T> {
+    fun expose(): List<T> {
         return queue.toList()
     }
 }

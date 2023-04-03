@@ -1,4 +1,4 @@
-package pc.impl
+package pc.threading
 
 class CancellableThread(val repeatingTask: () -> Unit) : Thread() {
 

@@ -1,8 +1,16 @@
 package pc.impl
 
+import pc.interfaces.Consumer
+import pc.interfaces.Producer
 import pc.interfaces.ProducerConsumerProtocol
+import pc.interfaces.Waiter
+import pc.threading.CancellableThread
 
-class ProducerConsumer(nProducers: Int, nConsumers: Int) :
+class ProducerConsumer(
+    producers: List<Producer<Int>>,
+    consumers: List<Consumer<Int>>,
+    waiter: Waiter = Waiter { Thread.sleep((500L..1000L).random()) }
+) :
     ProducerConsumerProtocol<Int> {
 
     private val dq = DataStore<Int>()
@@ -10,17 +18,17 @@ class ProducerConsumer(nProducers: Int, nConsumers: Int) :
     private val consumers: List<CancellableThread>
 
     init {
-        producers = (0 until nProducers).map { threadIndex ->
+        this.producers = producers.map { producer ->
             CancellableThread {
-                dq.push(threadIndex)
-                Thread.sleep((500L..1000L).random())
+                dq.push(producer.produce())
+                waiter.sleep()
             }
         }
 
-        consumers = (0 until nConsumers).map {
+        this.consumers = consumers.map { consumer ->
             CancellableThread {
-                dq.pop()
-                Thread.sleep((500L..1000L).random())
+                consumer.consume(dq.pop())
+                waiter.sleep()
             }
         }
     }
@@ -38,7 +46,7 @@ class ProducerConsumer(nProducers: Int, nConsumers: Int) :
         return dq.expose()
     }
 
-    fun isStopped(): Boolean {
+    override fun isStopped(): Boolean {
         return (consumers + producers).map { !it.isAlive }.all { it }
     }
 }

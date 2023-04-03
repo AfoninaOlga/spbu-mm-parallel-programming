@@ -4,4 +4,5 @@ interface ProducerConsumerProtocol<T> {
     fun start()
     fun stop()
     fun exposeStorage(): List<T>
+    fun isStopped(): Boolean
 }

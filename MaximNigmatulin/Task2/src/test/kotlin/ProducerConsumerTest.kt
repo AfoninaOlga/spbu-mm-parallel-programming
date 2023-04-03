@@ -1,5 +1,5 @@
 import org.junit.jupiter.api.RepeatedTest
-import pc.impl.ProducerConsumer
+import pc.mechanism.ProducerConsumer
 import pc.interfaces.Consumer
 import pc.interfaces.Producer
 import pc.interfaces.Waiter

@@ -1,6 +1,6 @@
 package pc
 
-import pc.impl.ProducerConsumer
+import pc.mechanism.ProducerConsumer
 import pc.interfaces.Producer
 import pc.interfaces.Consumer
 import java.time.LocalTime

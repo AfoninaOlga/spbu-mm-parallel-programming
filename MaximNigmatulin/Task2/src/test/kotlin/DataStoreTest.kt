@@ -1,5 +1,5 @@
 import org.junit.jupiter.api.Test
-import pc.impl.DataStore
+import pc.mechanism.DataStore
 import kotlin.test.assertEquals
 
 class DataStoreTest {

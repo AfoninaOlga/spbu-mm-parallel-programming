@@ -1,4 +1,4 @@
-package pc.impl
+package pc.mechanism
 
 import pc.interfaces.Consumer
 import pc.interfaces.Producer

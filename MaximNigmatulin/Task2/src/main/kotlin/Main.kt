@@ -3,7 +3,7 @@ package pc
 import pc.impl.ProducerConsumer
 import pc.interfaces.Producer
 import pc.interfaces.Consumer
-import java.time.LocalDate
+import java.time.LocalTime
 
 fun parseArgs(args: Array<String>): Pair<Int, Int> {
     require(args.size == 2) { "Wrong number of arguments, expected 2, got ${args.size}" }
@@ -11,7 +11,7 @@ fun parseArgs(args: Array<String>): Pair<Int, Int> {
 }
 
 fun log(msg: String) {
-    println("${LocalDate.now()} | ${Thread.currentThread().id}: $msg")
+    println("${LocalTime.now()}--[thread ${Thread.currentThread().id}]: $msg")
 }
 
 fun main(args: Array<String>) {

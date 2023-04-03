@@ -57,7 +57,7 @@ class ProducerConsumerTest {
         assert(pc.isStopped())
     }
 
-    @RepeatedTest(1)
+    @RepeatedTest(5)
     fun `test 1 consumer 1 producer consumed all`() {
         val tdp = TestDataProvider()
         val results = LinkedBlockingQueue<Int>()

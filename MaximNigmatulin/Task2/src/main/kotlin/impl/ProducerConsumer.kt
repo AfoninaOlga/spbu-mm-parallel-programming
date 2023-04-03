@@ -8,9 +8,10 @@ import pc.threading.CancellableThread
 class ProducerConsumer(
     producers: List<Producer<Int>>,
     consumers: List<Consumer<Int>>,
-    waiter: Waiter = Waiter { Thread.sleep((500L..1000L).random()) }
+    waiter: Waiter = Waiter { Thread.sleep((500L..1000L).random()) },
+    log: (String) -> Unit = {}
 ) {
-    private val dq = DataStore<Int>()
+    private val dq = DataStore<Int>(log)
     private val producers: List<CancellableThread>
     private val consumers: List<CancellableThread>
 
@@ -37,10 +38,6 @@ class ProducerConsumer(
     fun stop() {
         (consumers + producers).forEach { it.cancel() }
         (consumers + producers).forEach { it.join() }
-    }
-
-    fun exposeStorage(): List<Int> {
-        return dq.expose()
     }
 
     fun isStopped(): Boolean {

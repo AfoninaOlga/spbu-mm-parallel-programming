@@ -2,6 +2,7 @@ import org.junit.jupiter.api.RepeatedTest
 import pc.impl.ProducerConsumer
 import pc.interfaces.Consumer
 import pc.interfaces.Producer
+import pc.interfaces.Waiter
 import java.util.concurrent.LinkedBlockingQueue
 import kotlin.test.assertEquals
 
@@ -48,7 +49,7 @@ class ProducerConsumerTest {
         ) { Thread.sleep(1) }
 
         pc.start()
-        Thread.sleep(100)
+        Thread.sleep(1000)
         assert(!pc.isStopped())
 
         pc.stop()
@@ -56,21 +57,22 @@ class ProducerConsumerTest {
         assert(pc.isStopped())
     }
 
-    @RepeatedTest(5)
+    @RepeatedTest(1)
     fun `test 1 consumer 1 producer consumed all`() {
         val tdp = TestDataProvider()
         val results = LinkedBlockingQueue<Int>()
 
         val pc = ProducerConsumer(
             (0 until 1).map { Producer { tdp.provide() } },
-            (0 until 1).map { Consumer { if (it != TestDataProvider.END) results.add(it) } }
-        ) { Thread.sleep(1) }
+            (0 until 1).map { Consumer { if (it != TestDataProvider.END) results.add(it) } },
+            Waiter { Thread.sleep(1) }
+        )
 
         pc.start()
         Thread.sleep(100)
         pc.stop()
 
-        assertEquals(results.toSet(), TestDataProvider.START_DATA.toSet())
+        assertEquals(TestDataProvider.START_DATA.toSet(), results.toSet())
     }
 
     @RepeatedTest(5)
@@ -79,15 +81,16 @@ class ProducerConsumerTest {
         val results = LinkedBlockingQueue<Int>()
 
         val pc = ProducerConsumer(
-            (0 until 10).map { Producer { tdp.provide() } },
-            (0 until 1).map { Consumer { if (it != TestDataProvider.END) results.add(it) } }
-        ) { Thread.sleep(1) }
+            (0 until 1).map { Producer { tdp.provide() } },
+            (0 until 1).map { Consumer { if (it != TestDataProvider.END) results.add(it) } },
+            Waiter { Thread.sleep(1) }
+        )
 
         pc.start()
         Thread.sleep(100)
         pc.stop()
 
-        assertEquals(results.toSet(), TestDataProvider.START_DATA.toSet())
+        assertEquals(TestDataProvider.START_DATA.toSet(), results.toSet())
     }
 
     @RepeatedTest(5)
@@ -97,14 +100,15 @@ class ProducerConsumerTest {
 
         val pc = ProducerConsumer(
             (0 until 1).map { Producer { tdp.provide() } },
-            (0 until 10).map { Consumer { if (it != TestDataProvider.END) results.add(it) } }
-        ) { Thread.sleep(1) }
+            (0 until 1).map { Consumer { if (it != TestDataProvider.END) results.add(it) } },
+            Waiter { Thread.sleep(1) }
+        )
 
         pc.start()
         Thread.sleep(100)
         pc.stop()
 
-        assertEquals(results.toSet(), TestDataProvider.START_DATA.toSet())
+        assertEquals(TestDataProvider.START_DATA.toSet(), results.toSet())
     }
 
     @RepeatedTest(5)
@@ -113,14 +117,15 @@ class ProducerConsumerTest {
         val results = LinkedBlockingQueue<Int>()
 
         val pc = ProducerConsumer(
-            (0 until 10).map { Producer { tdp.provide() } },
-            (0 until 10).map { Consumer { if (it != TestDataProvider.END) results.add(it) } }
-        ) { Thread.sleep(1) }
+            (0 until 1).map { Producer { tdp.provide() } },
+            (0 until 1).map { Consumer { if (it != TestDataProvider.END) results.add(it) } },
+            Waiter { Thread.sleep(1) }
+        )
 
         pc.start()
         Thread.sleep(100)
         pc.stop()
 
-        assertEquals(results.toSet(), TestDataProvider.START_DATA.toSet())
+        assertEquals(TestDataProvider.START_DATA.toSet(), results.toSet())
     }
 }

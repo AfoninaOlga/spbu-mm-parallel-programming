@@ -2,6 +2,8 @@ package main.java.producer;
 
 import java.util.Stack;
 import java.util.concurrent.Semaphore;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
 
 /**
  * Producer class.
@@ -20,27 +22,30 @@ public class Producer implements Runnable {
     private Integer numberProducedProduct = 0;
     /** Product buffer. */
     private final Stack<String> productBuffer;
-    /** Mutex for this manufacturer. */
-    private final Semaphore mutex;
+    /** Lock and conditions for this producer. */
+    private final Lock lock;
+    private final Condition notFull;
+    private final Condition notEmpty;
 
     /**
      * Constructor for <code>Producer</code> with product buffer.
      *
      * @param productBuffer product buffer where products are extracted from
-     * @param mutex         mutex for this manufacturer
+     * @param lock          lock for this producer
      */
-    public Producer(Stack<String> productBuffer, Semaphore mutex) throws IllegalArgumentException {
+    public Producer(Stack<String> productBuffer, Lock lock, Condition notFull, Condition notEmpty) throws IllegalArgumentException {
         if (productBuffer == null) {
             throw new IllegalArgumentException("Product buffer can't be null");
-        } else if (mutex == null) {
-            throw new IllegalArgumentException("Mutex can't be null");
+        } else if (lock == null || notFull == null || notEmpty == null) {
+            throw new IllegalArgumentException("Lock or conditions can't be null");
         }
 
-        // TODO: проверить mutex, что он Semaphore(1)
         Thread thread = new Thread(this, "producer");
         this.name = "producer_" + thread.getId();
         this.productBuffer = productBuffer;
-        this.mutex = mutex;
+        this.lock = lock;
+        this.notFull = notFull;
+        this.notEmpty = notEmpty;
 
         thread.start();
     }
@@ -62,18 +67,20 @@ public class Producer implements Runnable {
     public void run() throws IllegalArgumentException {
         if (productBuffer == null) {
             throw new IllegalArgumentException("Product buffer can't be null");
-        } else if (mutex == null) {
-            throw new IllegalArgumentException("Mutex can't be null");
+        } else if (lock == null || notFull == null || notEmpty == null) {
+            throw new IllegalArgumentException("Lock or conditions can't be null");
         }
 
         try {
             while (true) {
-                mutex.acquire();
+                lock.lock();
+                //notFull.await();
 
                 putProduct();
                 System.out.println(name + " put: " + producedProduct);
 
-                mutex.release();
+                lock.unlock();
+                //notEmpty.signal();
                 Thread.sleep(1000);
 
                 if (isProducerStopped) {

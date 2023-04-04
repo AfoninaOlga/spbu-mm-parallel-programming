@@ -8,6 +8,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.*;
 import java.util.concurrent.Semaphore;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class Main {
 
@@ -26,18 +29,20 @@ public class Main {
         }
 
         Stack<String> productBuffer = new Stack<>();
-        // A special case of a semaphore is a mutex.
-        Semaphore mutex = new Semaphore(1);
+        // Lock and conditions for producers and consumers.
+        final Lock lock = new ReentrantLock();
+        final Condition notFull  = lock.newCondition();
+        final Condition notEmpty = lock.newCondition();
 
         List<Producer> producers = new ArrayList<>();
         List<Consumer> consumers = new ArrayList<>();
 
         for (int i = 0; i < numOfProducers; i++) {
-            producers.add(new Producer(productBuffer, mutex));
+            producers.add(new Producer(productBuffer, lock, notFull, notEmpty));
         }
 
         for (int i = 0; i < numOfConsumers; i++) {
-            consumers.add(new Consumer(productBuffer, mutex));
+            consumers.add(new Consumer(productBuffer, lock, notFull, notEmpty));
         }
 
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));

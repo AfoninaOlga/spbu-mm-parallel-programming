@@ -8,7 +8,7 @@
 - Из папки `src` запустить:
 
 ```
-javac -d bin -sourcepath ../src ershov/vladislav/Main.java
+javac -d bin -sourcepath ../src main/java/Main.java
 ```
 
 #### Использование

@@ -7,8 +7,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.*;
-import java.util.concurrent.Semaphore;
-import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -29,20 +27,18 @@ public class Main {
         }
 
         Stack<String> productBuffer = new Stack<>();
-        // Lock and conditions for producers and consumers.
+        // Lock for producers and consumers.
         final Lock lock = new ReentrantLock();
-        final Condition notFull  = lock.newCondition();
-        final Condition notEmpty = lock.newCondition();
 
         List<Producer> producers = new ArrayList<>();
         List<Consumer> consumers = new ArrayList<>();
 
         for (int i = 0; i < numOfProducers; i++) {
-            producers.add(new Producer(productBuffer, lock, notFull, notEmpty));
+            producers.add(new Producer(productBuffer, lock));
         }
 
         for (int i = 0; i < numOfConsumers; i++) {
-            consumers.add(new Consumer(productBuffer, lock, notFull, notEmpty));
+            consumers.add(new Consumer(productBuffer, lock));
         }
 
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));

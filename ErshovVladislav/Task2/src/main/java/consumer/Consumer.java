@@ -22,8 +22,6 @@ public class Consumer implements Runnable {
     private final Stack<String> productBuffer;
     /** Lock and conditions for this consumer. */
     private final Lock lock;
-    private final Condition notFull;
-    private final Condition notEmpty;
 
     /**
      * Constructor for <code>Consumer</code> with product buffer and mutex.
@@ -31,19 +29,17 @@ public class Consumer implements Runnable {
      * @param productBuffer product buffer where products are extracted from
      * @param lock          lock for this consumer
      */
-    public Consumer(Stack<String> productBuffer, Lock lock, Condition notFull, Condition notEmpty) throws IllegalArgumentException {
+    public Consumer(Stack<String> productBuffer, Lock lock) throws IllegalArgumentException {
         if (productBuffer == null) {
             throw new IllegalArgumentException("Product buffer can't be null");
-        } else if (lock == null || notFull == null || notEmpty == null) {
-            throw new IllegalArgumentException("Lock or conditions can't be null");
+        } else if (lock == null) {
+            throw new IllegalArgumentException("Lock can't be null");
         }
 
         Thread thread = new Thread(this, "consumer");
         this.name = "consumer_" + thread.getId();
         this.productBuffer = productBuffer;
         this.lock = lock;
-        this.notFull = notFull;
-        this.notEmpty = notEmpty;
 
         thread.start();
     }
@@ -59,8 +55,8 @@ public class Consumer implements Runnable {
     public void run() throws IllegalArgumentException {
         if (productBuffer == null) {
             throw new IllegalArgumentException("Product buffer can't be null");
-        } else if (lock == null || notFull == null || notEmpty == null) {
-            throw new IllegalArgumentException("Lock or conditions can't be null");
+        } else if (lock == null) {
+            throw new IllegalArgumentException("Lock can't be null");
         }
 
         try {

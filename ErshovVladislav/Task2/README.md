@@ -8,14 +8,14 @@
 - Из папки `src` запустить:
 
 ```
-javac -d bin -sourcepath ../src main/java/Main.java
+javac -d bin -sourcepath ../src main/java/ershov/Main.java
 ```
 
 #### Использование
 
 - Из папки `src`
 ```
-java -classpath ./bin main.java.Main numOfProducers numOfConsumers
+java -classpath ./bin main.java.ershov.Main numOfProducers numOfConsumers
 ```
 где `numOfProducers` это количество производителей, а `numOfConsumers` это количество потребителей
 

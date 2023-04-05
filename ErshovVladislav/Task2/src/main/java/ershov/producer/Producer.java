@@ -1,4 +1,4 @@
-package main.java.producer;
+package main.java.ershov.producer;
 
 import java.util.Stack;
 import java.util.concurrent.locks.Lock;

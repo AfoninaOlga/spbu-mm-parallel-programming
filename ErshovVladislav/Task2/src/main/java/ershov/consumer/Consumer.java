@@ -1,8 +1,6 @@
-package main.java.consumer;
+package main.java.ershov.consumer;
 
 import java.util.Stack;
-import java.util.concurrent.Semaphore;
-import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 
 /**

@@ -2,6 +2,7 @@ package main.java.ershov.producer;
 
 import java.util.Stack;
 import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Producer class.
@@ -34,6 +35,8 @@ public class Producer implements Runnable {
             throw new IllegalArgumentException("Product buffer can't be null");
         } else if (lock == null) {
             throw new IllegalArgumentException("Lock can't be null");
+        } else if (!(lock instanceof ReentrantLock)) {
+            throw new IllegalArgumentException("Lock must be instance of ReentrantLock");
         }
 
         Thread thread = new Thread(this, "producer");
@@ -48,10 +51,6 @@ public class Producer implements Runnable {
      * Put produced product into productBuffer on first place.
      */
     private void putProduct() throws IllegalArgumentException {
-        if (productBuffer == null) {
-            throw new IllegalArgumentException("Product buffer can't be null");
-        }
-
         producedProduct = name + ":product_" + numberProducedProduct;
         productBuffer.add(producedProduct);
         numberProducedProduct++;
@@ -59,12 +58,6 @@ public class Producer implements Runnable {
 
     @Override
     public void run() throws IllegalArgumentException {
-        if (productBuffer == null) {
-            throw new IllegalArgumentException("Product buffer can't be null");
-        } else if (lock == null) {
-            throw new IllegalArgumentException("Lock can't be null");
-        }
-
         try {
             while (true) {
                 lock.lock();

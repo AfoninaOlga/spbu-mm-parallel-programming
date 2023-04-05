@@ -10,6 +10,11 @@ import java.util.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+/**
+ * Main class for producer-consumer task.
+ *
+ * @author yersh2000@gmail.com
+ */
 public class Main {
 
     public static void main(String[] args) throws InterruptedException, IOException, IllegalArgumentException {

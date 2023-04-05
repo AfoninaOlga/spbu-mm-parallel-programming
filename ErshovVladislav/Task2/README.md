@@ -39,7 +39,9 @@ mvn -v
 
 - `java` version 17
 
-- `junit4` version 4.13.2
+- `junit-jupiter` version 5.8.1
+
+- `mockito-core` version 4.2.0
 
 #### Сборка
 
@@ -47,3 +49,5 @@ mvn -v
 ```
 mvn clean package
 ```
+
+- Отчет о покрытии тестов из корня: `target/site/jacoco/index.html`

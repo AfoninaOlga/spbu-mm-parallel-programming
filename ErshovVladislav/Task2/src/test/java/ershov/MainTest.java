@@ -1,5 +1,6 @@
 package ershov;
 
+import main.java.ershov.Main;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -13,6 +14,12 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import main.java.ershov.Main;
 
 public class MainTest {
+
+	@Test
+    public void testPositive() throws Exception {
+        String[] args = new String[] { "2", "2", "true" };
+        Main.main(args);
+    }
 
     @Test
     public void testWithNullArgs() {

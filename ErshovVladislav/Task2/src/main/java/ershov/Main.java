@@ -31,6 +31,13 @@ public class Main {
             throw new IllegalArgumentException("Number of producers and consumers entered incorrectly");
         }
 
+        boolean isStopped;
+        if (args.length < 3) {
+            isStopped = false;
+        } else {
+            isStopped = Boolean.parseBoolean(args[2]);
+        }
+
         Stack<String> productBuffer = new Stack<>();
         // Lock for producers and consumers.
         final Lock lock = new ReentrantLock();
@@ -47,7 +54,8 @@ public class Main {
         }
 
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-        while(reader.readLine() == null) {
+        while(!isStopped && reader.readLine() == null) {
+            System.out.println("Step");
             Thread.sleep(1000);
         }
         reader.close();

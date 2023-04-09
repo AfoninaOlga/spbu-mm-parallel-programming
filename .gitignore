@@ -10,8 +10,9 @@
 *.userosscache
 *.sln.docstates
 
-# User-specific files (MonoDevelop/Xamarin Studio)
+# User-specific files (MonoDevelop/Xamarin Studio/Microsoft Visual Studio)
 *.userprefs
+**/launchSettings.json
 
 # Mono auto generated files
 mono_crash.*
@@ -348,3 +349,6 @@ MigrationBackup/
 
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
+
+# MacOS specific
+.DS_Store

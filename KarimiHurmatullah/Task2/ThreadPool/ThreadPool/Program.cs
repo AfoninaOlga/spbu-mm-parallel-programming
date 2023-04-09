@@ -1,16 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using ThreadPool.IMyTasks;
 
-namespace Task2_ThreadPool_
+namespace ThreadPool
 {
-    class Program
+    internal class Program
     {
         static void Main(string[] args)
         {
-            var threadPool = new ThreadPool(12);
+            var threadPool = new ThreadPools.ThreadPool(12);
             var tasksList = new List<MyTask<int>>();
 
             for (var threadIndex = 10; threadIndex >= 1; --threadIndex)
@@ -28,7 +24,7 @@ namespace Task2_ThreadPool_
             foreach (var task in tasksList)
             {
                 var result = task.Result;
-                
+
                 Console.WriteLine($"Result = {result}");
                 var newTask = task.ContinueWith(radius => {
                     var newValue = (int)Math.Log(radius) / 2;

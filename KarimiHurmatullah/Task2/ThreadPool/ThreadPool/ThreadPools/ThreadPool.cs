@@ -3,10 +3,10 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
+using ThreadPool.IMyTasks;
 
-namespace Task2_ThreadPool_
+namespace ThreadPool.ThreadPools
 {
     public class ThreadPool : IDisposable
     {
@@ -86,7 +86,7 @@ namespace Task2_ThreadPool_
 
         protected virtual void Dispose(bool disposing)
         {
-            if(disposing)
+            if (disposing)
             {
                 Shutdown();
             }

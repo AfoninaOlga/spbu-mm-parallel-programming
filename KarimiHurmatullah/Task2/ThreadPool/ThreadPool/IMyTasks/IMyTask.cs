@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Task2_ThreadPool_
+namespace ThreadPool.IMyTasks
 {
     public interface IMyTask<TResult>
     {
@@ -23,7 +23,7 @@ namespace Task2_ThreadPool_
     public class MyTask<TResult> : IMyTask<TResult>
     {
         private readonly Func<TResult> _function;
-        private readonly ThreadPool _threadPool;
+        private readonly ThreadPools.ThreadPool _threadPool;
         private readonly AutoResetEvent _event = new AutoResetEvent(true);
         private TResult _result;
 
@@ -39,9 +39,9 @@ namespace Task2_ThreadPool_
             {
                 _event.WaitOne();
 
-                if (_hasException){throw _taskException;}
+                if (_hasException) { throw _taskException; }
 
-                if (!IsCompleted){Start();}
+                if (!IsCompleted) { Start(); }
 
                 _event.Set();
                 return _result;
@@ -51,7 +51,7 @@ namespace Task2_ThreadPool_
         private AggregateException _taskException;
         private bool _hasException = false;
 
-        public MyTask(Func<TResult> function, ThreadPool threadPool)
+        public MyTask(Func<TResult> function, ThreadPools.ThreadPool threadPool)
         {
             _function = function;
             _threadPool = threadPool;
@@ -63,7 +63,7 @@ namespace Task2_ThreadPool_
             if (_threadPool.IsTerminated)
             {
                 _taskException = new AggregateException("Unable to execute task because the thread pool has been terminated",
-                  new ThreadPoolException("The thread pool encountered an error while executing a task. See inner exception for details."));
+                  new ThreadPoolExceptions.ThreadPoolException("The thread pool encountered an error while executing a task. See inner exception for details."));
                 _hasException = true;
             }
 

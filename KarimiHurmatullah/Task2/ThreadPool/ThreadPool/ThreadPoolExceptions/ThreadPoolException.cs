@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Task2_ThreadPool_
+namespace ThreadPool.ThreadPoolExceptions
 {
     public class ThreadPoolException : Exception
     {
@@ -15,5 +15,4 @@ namespace Task2_ThreadPool_
             this.message = message;
         }
     }
-
 }

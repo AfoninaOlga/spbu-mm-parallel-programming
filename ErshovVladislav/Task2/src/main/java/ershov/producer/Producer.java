@@ -13,8 +13,8 @@ public class Producer implements Runnable {
 
     /** Producer name. */
     private final String name;
-    /** Producer stop checking flag. */
-    private boolean isProducerStopped = false;
+    /** Producer's thread. */
+    private Thread thread;
     /** Producer product. */
     private String producedProduct;
     /** Number of products produced. */
@@ -39,7 +39,7 @@ public class Producer implements Runnable {
             throw new IllegalArgumentException("Lock must be instance of ReentrantLock");
         }
 
-        Thread thread = new Thread(this, "producer");
+        this.thread = new Thread(this, "producer");
         this.name = "producer_" + thread.getId();
         this.productBuffer = productBuffer;
         this.lock = lock;
@@ -68,7 +68,7 @@ public class Producer implements Runnable {
                 lock.unlock();
                 Thread.sleep(1000);
 
-                if (isProducerStopped) {
+                if (thread.isInterrupted()) {
                     throw new InterruptedException();
                 }
             }
@@ -79,7 +79,7 @@ public class Producer implements Runnable {
 
     /** Stop producer. */
     public void stop() {
-        isProducerStopped = true;
+        thread.interrupt();
     }
 
 }

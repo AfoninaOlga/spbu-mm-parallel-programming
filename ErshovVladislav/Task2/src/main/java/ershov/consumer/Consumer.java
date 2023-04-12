@@ -13,8 +13,8 @@ public class Consumer implements Runnable {
 
     /** Consumer name. */
     private final String name;
-    /** Consumer stop checking flag. */
-    private boolean isConsumerStopped = false;
+    /** Consumer's thread. */
+    private Thread thread;
     /** Extracted product. */
     private Object extractedProduct;
     /** Product buffer. */
@@ -37,7 +37,7 @@ public class Consumer implements Runnable {
             throw new IllegalArgumentException("Lock must be instance of ReentrantLock");
         }
 
-        Thread thread = new Thread(this, "consumer");
+        this.thread = new Thread(this, "consumer");
         this.name = "consumer_" + thread.getId();
         this.productBuffer = productBuffer;
         this.lock = lock;
@@ -66,7 +66,7 @@ public class Consumer implements Runnable {
                 lock.unlock();
                 Thread.sleep(1000);
 
-                if (isConsumerStopped) {
+                if (thread.isInterrupted()) {
                     throw new InterruptedException();
                 }
             }
@@ -77,7 +77,7 @@ public class Consumer implements Runnable {
 
     /** Stop consumer. */
     public void stop() {
-        isConsumerStopped = true;
+        thread.interrupt();
     }
 
 }

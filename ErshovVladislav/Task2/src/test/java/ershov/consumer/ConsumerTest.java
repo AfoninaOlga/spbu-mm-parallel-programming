@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class ConsumerTest {
 
     @Test
-    public void testPositive() throws InterruptedException {
+    public void testPositive() {
         Stack<String> productBuffer = new Stack<>();
         Lock lock = new ReentrantLock();
 
@@ -26,7 +26,6 @@ public class ConsumerTest {
         Consumer consumer = new Consumer(productBuffer, lock);
 
         consumer.stop();
-        consumer.run();
 
         assertEquals(productBuffer, new Stack<>());
     }

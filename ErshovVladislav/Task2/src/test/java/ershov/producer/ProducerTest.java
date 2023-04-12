@@ -20,7 +20,7 @@ public class ProducerTest {
         Producer producer = new Producer(productBuffer, lock);
 
         producer.stop();
-        producer.run();
+        Thread.sleep(1000);
 
         assertFalse(productBuffer.empty());
     }

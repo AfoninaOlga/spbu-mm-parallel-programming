@@ -64,7 +64,7 @@ class ProducerConsumerTest {
 
         val pc = ProducerConsumer(
             (0 until 1).map { Producer { tdp.provide() } },
-            (0 until 1).map { Consumer { if (it != TestDataProvider.END) results.add(it) } },
+            (0 until 1).map { Consumer { if (it != TestDataProvider.END) it?.let { it1 -> results.add(it1) } } },
             Waiter { Thread.sleep(1) }
         )
 
@@ -82,7 +82,7 @@ class ProducerConsumerTest {
 
         val pc = ProducerConsumer(
             (0 until 1).map { Producer { tdp.provide() } },
-            (0 until 1).map { Consumer { if (it != TestDataProvider.END) results.add(it) } },
+            (0 until 1).map { Consumer { if (it != TestDataProvider.END) it?.let { it1 -> results.add(it1) } } },
             Waiter { Thread.sleep(1) }
         )
 
@@ -100,7 +100,7 @@ class ProducerConsumerTest {
 
         val pc = ProducerConsumer(
             (0 until 1).map { Producer { tdp.provide() } },
-            (0 until 1).map { Consumer { if (it != TestDataProvider.END) results.add(it) } },
+            (0 until 1).map { Consumer { if (it != TestDataProvider.END) it?.let { it1 -> results.add(it1) } } },
             Waiter { Thread.sleep(1) }
         )
 
@@ -118,7 +118,7 @@ class ProducerConsumerTest {
 
         val pc = ProducerConsumer(
             (0 until 1).map { Producer { tdp.provide() } },
-            (0 until 1).map { Consumer { if (it != TestDataProvider.END) results.add(it) } },
+            (0 until 1).map { Consumer { if (it != TestDataProvider.END) it?.let { it1 -> results.add(it1) } } },
             Waiter { Thread.sleep(1) }
         )
 

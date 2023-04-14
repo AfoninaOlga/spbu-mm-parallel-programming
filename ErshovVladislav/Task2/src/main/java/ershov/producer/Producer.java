@@ -67,10 +67,6 @@ public class Producer implements Runnable {
 
                 lock.unlock();
                 Thread.sleep(1000);
-
-                if (thread.isInterrupted()) {
-                    throw new InterruptedException();
-                }
             }
         } catch (InterruptedException e) {
             System.out.println(name + " finished");

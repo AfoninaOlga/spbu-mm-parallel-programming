@@ -16,9 +16,10 @@ if (!int.TryParse(args[1], out var consumersCount) || consumersCount <= 0)
 }
 
 var task = new ProducerConsumerTask<int>();
-var consumers = new List<IConsumer>();
-var producers = new List<IProducer>();
+var consumerTasks = new Task[consumersCount];
+var producerTasks = new Task[producersCount];
 var random = new Random();
+var token = new CancellationTokenSource();
 
 for (var i = 0; i < producersCount; ++i)
 {
@@ -26,13 +27,15 @@ for (var i = 0; i < producersCount; ++i)
 
     int Produce()
     {
-        Thread.Sleep(random.Next(100, 4000));
+        Thread.Sleep(random.Next(100, 2000));
         Console.WriteLine($"Produce {id} from {id}");
         return id;
     }
 
-    var producer = task.AddProducer(Produce);
-    producers.Add(producer);
+    var producer = new Producer<int>(Produce);
+    var producerTask = task.AddProducer(producer, token.Token);
+    producerTask.Start();
+    producerTasks[i] = producerTask;
 }
 
 for (var i = 0; i < consumersCount; ++i)
@@ -42,25 +45,22 @@ for (var i = 0; i < consumersCount; ++i)
     void Consume(int value)
     {
         Console.WriteLine($"Consume {value} from {id}");
-        Thread.Sleep(random.Next(100, 4000));
+        Thread.Sleep(random.Next(100, 2000));
     }
 
-    var consumer = task.AddConsumer(Consume);
-    consumers.Add(consumer);
+    var consumer = new Consumer<int>(Consume);
+    var consumerTask = task.AddConsumer(consumer, token.Token);
+    consumerTask.Start();
+    consumerTasks[i] = consumerTask;
 }
 
-var token = new CancellationTokenSource();
-
 Console.WriteLine("Press any key to stop the process");
-
-var consumersTasks = consumers.Select(c => c.Start(token.Token)).ToArray();
-var producersTasks = producers.Select(c => c.Start(token.Token)).ToArray();
 
 Console.ReadKey();
 
 token.Cancel();
 
-Task.WaitAll(consumersTasks);
-Task.WaitAll(producersTasks);
+Task.WaitAll(consumerTasks, token.Token);
+Task.WaitAll(producerTasks, token.Token);
 
 Console.WriteLine("Exited");

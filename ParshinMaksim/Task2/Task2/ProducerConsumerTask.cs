@@ -1,127 +1,77 @@
 ﻿namespace Task2;
 
-public interface IProducer
-{
-    public Task Start(CancellationToken cancellationToken);
-}
-
-public interface IConsumer
-{
-    public Task Start(CancellationToken cancellationToken);
-}
-
 public class ProducerConsumerTask<T>
 {
-    private readonly Semaphore _emptyQueueLock = new(0, 1);
-    private readonly Semaphore _queueAccessLock = new(1, 1);
+	private readonly Semaphore emptyQueueLock = new(0, 1);
+	private readonly Semaphore queueAccessLock = new(1, 1);
 
-    private readonly List<T> _queue = new();
+	private readonly List<T> queue = new();
 
-    private class Producer : IProducer
+	public Task AddProducer(IProducer<T> producer, CancellationToken cancellationToken)
+	{
+		void Produce()
+		{
+			while (!cancellationToken.IsCancellationRequested && producer.CanProduce)
+			{
+				var produced = producer.Produce();
 
-    {
-        private readonly Func<T> _produce;
-        private readonly Func<bool> _canProduce;
-        private readonly ProducerConsumerTask<T> _task;
+				queueAccessLock.WaitOne();
+				var wasEmpty = queue.Count == 0;
+				queue.Add(produced);
 
-        public Producer(Func<T> produce, Func<bool> canProduce, ProducerConsumerTask<T> task)
-        {
-            _produce = produce;
-            _canProduce = canProduce;
-            _task = task;
-        }
+				if (wasEmpty)
+				{
+					emptyQueueLock.Release();
+				}
 
-        public Task Start(CancellationToken cancellationToken)
-        {
-            void ProducerAction()
-            {
-                while (!cancellationToken.IsCancellationRequested && _canProduce())
-                {
-                    var produced = _produce();
+				queueAccessLock.Release();
+			}
+		}
 
-                    _task._queueAccessLock.WaitOne();
-                    var wasEmpty = _task._queue.Count == 0;
-                    _task._queue.Add(produced);
+		return new Task(Produce);
+	}
 
-                    if (wasEmpty)
-                    {
-                        _task._emptyQueueLock.Release();
-                    }
+	public Task AddConsumer(IConsumer<T> consumer, CancellationToken cancellationToken)
+	{
+		void Consume()
+		{
+			var handles = new[] { cancellationToken.WaitHandle, emptyQueueLock };
 
-                    _task._queueAccessLock.Release();
-                }
-            }
+			while (!cancellationToken.IsCancellationRequested)
+			{
+				WaitHandle.WaitAny(handles);
 
-            return Task.Run(ProducerAction);
-        }
-    }
+				if (cancellationToken.IsCancellationRequested)
+				{
+					return;
+				}
 
-    private class Consumer : IConsumer
-    {
-        private readonly Action<T> _consume;
-        private readonly ProducerConsumerTask<T> _task;
+				var consumed = default(T);
+				var wasConsumed = false;
 
-        public Consumer(Action<T> consume, ProducerConsumerTask<T> task)
-        {
-            _consume = consume;
-            _task = task;
-        }
+				queueAccessLock.WaitOne();
 
-        public Task Start(CancellationToken cancellationToken)
-        {
-            void ConsumerAction()
-            {
-                var handles = new[] { cancellationToken.WaitHandle, _task._emptyQueueLock };
+				if (queue.Count > 0)
+				{
+					consumed = queue.Last();
+					queue.Remove(consumed);
+					wasConsumed = true;
+				}
 
-                while (!cancellationToken.IsCancellationRequested)
-                {
-                    WaitHandle.WaitAny(handles);
+				if (queue.Count > 0)
+				{
+					emptyQueueLock.Release();
+				}
 
-                    if (cancellationToken.IsCancellationRequested)
-                    {
-                        return;
-                    }
+				queueAccessLock.Release();
 
-                    var consumed = default(T);
-                    var wasConsumed = false;
+				if (wasConsumed)
+				{
+					consumer.Consume(consumed);
+				}
+			}
+		}
 
-                    _task._queueAccessLock.WaitOne();
-
-                    if (_task._queue.Count > 0)
-                    {
-                        consumed = _task._queue.Last();
-                        _task._queue.Remove(consumed);
-                        wasConsumed = true;
-                    }
-
-                    if (_task._queue.Count > 0)
-                    {
-                        _task._emptyQueueLock.Release();
-                    }
-
-                    _task._queueAccessLock.Release();
-
-                    if (wasConsumed)
-                    {
-                        _consume(consumed);
-                    }
-                }
-            }
-
-            return Task.Run(ConsumerAction);
-        }
-    }
-
-    public IProducer AddProducer(Func<T> produce, Func<bool>? canProduce = null)
-    {
-        if (canProduce is not null)
-        {
-            return new Producer(produce, canProduce, this);
-        }
-
-        return new Producer(produce, () => true, this);
-    }
-
-    public IConsumer AddConsumer(Action<T> consume) =>
-        new Consumer(consume, this);
+		return new Task(Consume);
+	}
 }

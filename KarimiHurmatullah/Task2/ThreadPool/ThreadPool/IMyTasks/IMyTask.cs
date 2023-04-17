@@ -13,18 +13,23 @@ namespace ThreadPool.IMyTasks
         {
             get;
         }
+
         TResult Result
         {
             get;
         }
+
         IMyTask<TNewResult> ContinueWith<TNewResult>(Func<TResult, TNewResult> function);
     }
 
     public class MyTask<TResult> : IMyTask<TResult>
     {
-        private readonly Func<TResult> _function;
-        private readonly ThreadPools.ThreadPool _threadPool;
         private readonly AutoResetEvent _event = new AutoResetEvent(true);
+
+        private readonly ThreadPools.ThreadPool _threadPool;
+
+        private readonly Func<TResult> _function;
+
         private TResult _result;
 
         public bool IsCompleted
@@ -38,17 +43,22 @@ namespace ThreadPool.IMyTasks
             get
             {
                 _event.WaitOne();
+                if (_hasException) 
+                {
+                    throw _taskException;
+                }
 
-                if (_hasException) { throw _taskException; }
-
-                if (!IsCompleted) { Start(); }
-
+                if (!IsCompleted) 
+                {
+                    Start();
+                }
                 _event.Set();
                 return _result;
             }
         }
 
         private AggregateException _taskException;
+
         private bool _hasException = false;
 
         public MyTask(Func<TResult> function, ThreadPools.ThreadPool threadPool)
@@ -62,11 +72,9 @@ namespace ThreadPool.IMyTasks
         {
             if (_threadPool.IsTerminated)
             {
-                _taskException = new AggregateException("Unable to execute task because the thread pool has been terminated",
-                  new ThreadPoolExceptions.ThreadPoolException("The thread pool encountered an error while executing a task. See inner exception for details."));
+                _taskException = new AggregateException("Unable to execute task because the thread pool has been terminated", new ThreadPoolExceptions.ThreadPoolException("The thread pool encountered an error while executing a task. See inner exception for details."));
                 _hasException = true;
             }
-
             return _threadPool.Submit(() => function(Result));
         }
 

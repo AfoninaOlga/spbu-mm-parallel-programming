@@ -12,7 +12,8 @@ namespace ThreadPool
             for (var threadIndex = 10; threadIndex >= 1; --threadIndex)
             {
                 var tid = threadIndex;
-                var function = new Func<int>(() => {
+                var function = new Func<int>(() => 
+                {
                     Console.WriteLine($"task number {tid} accepted for executation");
                     return (int)Math.Pow(2, tid);
                 });
@@ -24,9 +25,9 @@ namespace ThreadPool
             foreach (var task in tasksList)
             {
                 var result = task.Result;
-
                 Console.WriteLine($"Result = {result}");
-                var newTask = task.ContinueWith(radius => {
+                var newTask = task.ContinueWith(radius => 
+                {
                     var newValue = (int)Math.Log(radius) / 2;
                     Console.WriteLine($"Task number {newValue} accepted for execution");
                     return (int)Math.Pow(2, newValue);

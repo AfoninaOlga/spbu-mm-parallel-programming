@@ -6,14 +6,13 @@ using System.Threading.Tasks;
 
 namespace ProducerConsumer.Consumer
 {
-    internal class Consumer
+    public class Consumer
     {
-        public async Task Consume(List<string> buffer, CancellationToken cancellationToken)
+        public async Task Consume(List<string> buffer, Connector.Connector connector, CancellationToken cancellationToken)
         {
             while (!cancellationToken.IsCancellationRequested)
             {
                 string item = null;
-
                 lock (buffer)
                 {
                     if (buffer.Count > 0)
@@ -22,12 +21,11 @@ namespace ProducerConsumer.Consumer
                         buffer.RemoveAt(0);
                     }
                 }
-
                 if (item != null)
                 {
+                    connector.DecrementBufferCount();
                     Console.WriteLine($"Consumed: {item}");
                 }
-
                 await Task.Delay(TimeSpan.FromMilliseconds(3000), cancellationToken);
             }
         }

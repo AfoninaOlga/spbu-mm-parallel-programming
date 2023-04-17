@@ -10,11 +10,18 @@ namespace ThreadPool.ThreadPools
 {
     public class ThreadPool : IDisposable
     {
-        private readonly int _maximumThreadPoolCount;
-        private readonly Thread[] _threads;
-        private readonly ConcurrentQueue<Action> _queueOfTasks = new ConcurrentQueue<Action>();
-        private readonly AutoResetEvent _event = new AutoResetEvent(true);
         private readonly CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
+
+        private readonly ConcurrentQueue<Action> _queueOfTasks = new ConcurrentQueue<Action>();
+
+        private AutoResetEvent _taskAvailableEvent = new AutoResetEvent(false);
+
+        private readonly int _maximumThreadPoolCount;
+
+        private readonly Thread[] _threads;
+
+        private int _nextThreadIndex = 0;
+
         public bool IsTerminated
         {
             get;
@@ -25,10 +32,8 @@ namespace ThreadPool.ThreadPools
         {
             if (maximumThreadsCount <= 0)
             {
-                throw new ArgumentOutOfRangeException(nameof(maximumThreadsCount),
-                "The number of threads in the pool must be greater than zero.");
+                throw new ArgumentOutOfRangeException(nameof(maximumThreadsCount), "The number of threads in the pool must be greater than zero.");
             }
-
             _maximumThreadPoolCount = maximumThreadsCount;
             IsTerminated = false;
             _threads = new Thread[maximumThreadsCount];
@@ -39,29 +44,54 @@ namespace ThreadPool.ThreadPools
         {
             for (var threadIndex = 0; threadIndex < _maximumThreadPoolCount; ++threadIndex)
             {
-                _threads[threadIndex] = new Thread(() => {
+                _threads[threadIndex] = new Thread(() =>
+                {
                     while (!_cancellationTokenSource.Token.IsCancellationRequested)
                     {
-                        if (!_queueOfTasks.IsEmpty)
+                        if (_queueOfTasks.TryDequeue(out var result))
                         {
-                            _queueOfTasks.TryDequeue(out
-                              var result);
                             result?.Invoke();
+                        }
+                        else
+                        {
+                            StealTasks();
+                            _taskAvailableEvent.WaitOne(0);
                         }
                     }
                 });
-
                 _threads[threadIndex].Start();
             }
         }
+
+        private void StealTasks()
+        {
+            for (var i = 0; i < _maximumThreadPoolCount; i++)
+            {
+                var randomIndex = new Random().Next(_maximumThreadPoolCount);
+                if (randomIndex != _nextThreadIndex && _queueOfTasks.TryDequeue(out var stolenTask))
+                {
+                    _queueOfTasks.Enqueue(stolenTask);
+                    break;
+                }
+            }
+            Interlocked.Increment(ref _nextThreadIndex);
+            _nextThreadIndex %= _maximumThreadPoolCount;
+        }
+
         public MyTask<TResult> Submit<TResult>(Func<TResult> function)
         {
-            _event.WaitOne();
+            var currentThreadIndex = _nextThreadIndex;
+            _nextThreadIndex = (_nextThreadIndex + 1) % _maximumThreadPoolCount;
+
             var task = new MyTask<TResult>(function, this);
-            _queueOfTasks.Enqueue(() => task.Start());
-            _event.Set();
+            _queueOfTasks.Enqueue(() =>
+            {
+                task.Start();
+                _taskAvailableEvent.Set();
+            });
             return task;
         }
+
         public void Shutdown()
         {
             if (!IsTerminated)
@@ -71,7 +101,6 @@ namespace ThreadPool.ThreadPools
                 {
                     _threads[i].Join();
                 }
-                _event.Dispose();
                 _cancellationTokenSource.Dispose();
             }
             IsTerminated = true;
@@ -81,7 +110,6 @@ namespace ThreadPool.ThreadPools
         {
             Dispose(true);
             GC.SuppressFinalize(this);
-
         }
 
         protected virtual void Dispose(bool disposing)
@@ -90,8 +118,6 @@ namespace ThreadPool.ThreadPools
             {
                 Shutdown();
             }
-
-            _event.Dispose();
             _cancellationTokenSource.Dispose();
         }
 

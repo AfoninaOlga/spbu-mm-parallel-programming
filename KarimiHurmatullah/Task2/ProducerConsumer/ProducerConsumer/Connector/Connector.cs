@@ -6,14 +6,21 @@ using System.Threading.Tasks;
 
 namespace ProducerConsumer.Connector
 {
-    internal class Connector
+    public class Connector
     {
-        private readonly List<string> Buffer = new List<string>();
+        private CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+
+        private readonly List<string> buffer = new List<string>();
+
         private const int NumProducers = 2;
+
         private const int NumConsumers = 2;
+
         private int ActiveProducers;
+
         private int ActiveConsumers;
-        private readonly CancellationTokenSource CancellationTokenSource = new CancellationTokenSource();
+
+        private int BufferCount = 0;
 
         public async Task Run()
         {
@@ -26,7 +33,7 @@ namespace ProducerConsumer.Connector
                 {
                     if (Interlocked.Increment(ref ActiveProducers) <= NumProducers)
                     {
-                        await producer.Produce(Buffer, CancellationTokenSource.Token);
+                        await producer.Produce(buffer, this ,cancellationTokenSource.Token);
                         Interlocked.Decrement(ref ActiveProducers);
                     }
                 }));
@@ -39,14 +46,14 @@ namespace ProducerConsumer.Connector
                 {
                     if (Interlocked.Increment(ref ActiveConsumers) <= NumConsumers)
                     {
-                        await consumer.Consume(Buffer, CancellationTokenSource.Token);
+                        await consumer.Consume(buffer, this, cancellationTokenSource.Token);
                         Interlocked.Decrement(ref ActiveConsumers);
                     }
                 }));
             }
 
             Console.ReadKey();
-            CancellationTokenSource.Cancel();
+            cancellationTokenSource.Cancel();
             try
             {
                 await Task.WhenAll(tasks);
@@ -55,6 +62,21 @@ namespace ProducerConsumer.Connector
             {
                 Console.WriteLine("\n Producers and Consumers processes are shutt down");
             }
+        }
+
+        public int GetBufferCount()
+        {
+            return BufferCount;
+        }
+
+        public void IncrementBufferCount()
+        {
+            Interlocked.Increment(ref BufferCount);
+        }
+
+        public void DecrementBufferCount()
+        {
+            Interlocked.Decrement(ref BufferCount);
         }
 
     }

@@ -14,35 +14,38 @@ namespace ThreadPool.ThreadPools.Tests
     [TestClass()]
     public class ThreadPoolTests
     {
-        public const int ThreadCount = 5;
+        CancellationTokenSource cancellationToken = new CancellationTokenSource();
+
+        ThreadPool threadPool = new ThreadPool(_threadCount);
+
+        public const int _threadCount = 5;
+
         public Thread[] _threads;
+
         public bool IsTerminated = false;
+
 
         [TestMethod()]
         public void SubmitTest()
         {
-            var threadPool = new ThreadPool(ThreadCount);
             var task = threadPool.Submit(() => 500 * 500);
             task.Start();
-            Thread.Sleep(100);
-            threadPool.Shutdown();
+            SleepAndShutdownPool();
             Assert.That(task.IsCompleted && task.Result == 250000, Is.True);
         }
 
         [TestMethod()]
         public void VerifyNThreads()
         {
-            var threadPool = new ThreadPool(ThreadCount);
             var tasks = new List<MyTask<int>>();
             for (int i = 0; i < 5; i++)
             {
                 tasks.Add(threadPool.Submit(GetThreadId));
             }
             var selectThreads = tasks.Select(task => task.Result);
-            Thread.Sleep(100);
-            threadPool.Shutdown();
+            SleepAndShutdownPool();
             var threadIdCount = selectThreads.Count();
-            Assert.That(threadIdCount, Is.EqualTo(ThreadCount));
+            Assert.That(threadIdCount, Is.EqualTo(_threadCount));
         }
 
         [TestMethod()]
@@ -55,19 +58,22 @@ namespace ThreadPool.ThreadPools.Tests
         [TestMethod()]
         public void ShutdownTest()
         {
-            var threadPool = new ThreadPool(ThreadCount);
-            var cancellationToken = new CancellationTokenSource();
             if (IsTerminated)
             {
                 cancellationToken.Cancel();
-                for (var i = 0; i < ThreadCount; ++i)
+                for (var i = 0; i < _threadCount; ++i)
                 {
                     _threads[i].Join();
                 }
             }
+            SleepAndShutdownPool();
+            Assert.IsTrue(true);
+        }
+
+        public void SleepAndShutdownPool()
+        {
             Thread.Sleep(100);
             threadPool.Shutdown();
-            Assert.IsTrue(true);
         }
     }
 }

@@ -8,11 +8,11 @@ namespace ThreadPool.ThreadPoolExceptions
 {
     public class ThreadPoolException : Exception
     {
-        private readonly string message;
+        private readonly string _message;
 
         public ThreadPoolException(string message) : base(message)
         {
-            this.message = message;
+            this._message = message;
         }
     }
 }

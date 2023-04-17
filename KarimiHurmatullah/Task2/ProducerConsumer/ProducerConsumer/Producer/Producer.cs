@@ -6,19 +6,18 @@ using System.Threading.Tasks;
 
 namespace ProducerConsumer.Producer
 {
-    internal class Producer
+    public class Producer
     {
-        public async Task Produce(List<string> buffer, CancellationToken cancellationToken)
+        public async Task Produce(List<string> buffer, Connector.Connector connector, CancellationToken cancellationToken)
         {
             while (!cancellationToken.IsCancellationRequested)
             {
                 string item = DateTime.Now.ToString("HH:mm:ss.fff");
-
                 lock (buffer)
                 {
                     buffer.Add(item);
                 }
-
+                connector.IncrementBufferCount();
                 Console.WriteLine($"Produced: {item}");
                 await Task.Delay(TimeSpan.FromMilliseconds(4000), cancellationToken);
             }

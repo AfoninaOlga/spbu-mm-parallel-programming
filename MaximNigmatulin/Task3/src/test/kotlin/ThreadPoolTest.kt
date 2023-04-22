@@ -1,5 +1,4 @@
 import org.junit.jupiter.api.assertThrows
-import org.junit.jupiter.api.assertTimeout
 import org.junit.jupiter.api.assertTimeoutPreemptively
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
@@ -62,7 +61,7 @@ class ThreadPoolTest {
         val pool = ThreadPool(nThreads, strategy)
         val set = ConcurrentSkipListSet<Long>()
 
-        (0 until nThreads * 10).map {
+        (0 until nThreads * 100).map {
             pool.enqueue(ThreadPoolTask(it.toString(), pool) {
                 set.add(Thread.currentThread().id)
             })

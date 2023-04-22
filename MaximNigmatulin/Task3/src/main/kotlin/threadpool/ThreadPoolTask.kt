@@ -9,27 +9,30 @@ class ThreadPoolTask<TResult>(
     private val pool: ThreadPool,
     val function: () -> TResult
 ) : INamedRunnable {
-    private var _result: TResult? = null
 
     @Volatile
-    private var isCompleted: Boolean = false
+    var _result: TResult? = null
 
     private var childTasks: BlockingQueue<INamedRunnable> = LinkedBlockingQueue()
 
+    fun isCompleted(): Boolean {
+        return _result != null
+    }
+
     fun result(): TResult {
-        while (!isCompleted) {
+        try {
+            _result = function()
+            return _result!!
+        } catch (ex: Exception) {
+            throw AggregateException(ex)
         }
-        return _result!!
     }
 
     override fun run() {
         try {
             _result = function()
-        } catch (ex: Exception) {
-            throw AggregateException(ex)
         } finally {
             log("<$name> finished")
-            isCompleted = true
             while (!childTasks.isEmpty()) {
                 pool.enqueue(childTasks.take())
             }
@@ -42,7 +45,7 @@ class ThreadPoolTask<TResult>(
             f(parentResult)
         }
 
-        if (isCompleted) {
+        if (isCompleted()) {
             pool.enqueue(newTask)
         } else {
             childTasks.put(newTask)

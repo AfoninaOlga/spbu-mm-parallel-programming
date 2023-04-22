@@ -28,7 +28,7 @@ class WorkStealingWorker(
                 }
             }
         }
-        println("cToken expired")
+        log("cToken expired")
         interrupt()
     }
 }

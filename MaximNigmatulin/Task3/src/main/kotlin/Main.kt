@@ -6,9 +6,15 @@ import utils.parseArgs
 
 fun main(args: Array<String>) {
     val nThreads = parseArgs(args)
-    val pool = ThreadPool(nThreads, WorkStrategy.STEALING)
+    val pool = ThreadPool(nThreads, WorkStrategy.SHARING)
 
     val root = ThreadPoolTask("root", pool) {
+        Thread.sleep(1000)
+        throw RuntimeException("Root error!")
+        2
+    }
+
+    val onceContinuedRoot = root.continueWith {
         Thread.sleep(1000)
         2
     }
@@ -21,11 +27,6 @@ fun main(args: Array<String>) {
         it * 2
     }
 
-    val thriceContinuedOne = twiceContinuedOne.continueWith {
-        Thread.sleep(1000)
-        it * 2
-    }
-
     val thriceContinuedTwo = twiceContinuedOne.continueWith {
         Thread.sleep(1000)
         it * 2
@@ -33,13 +34,10 @@ fun main(args: Array<String>) {
 
     pool.enqueue(root)
 
-    (0..10).forEach {
-        pool.enqueue(ThreadPoolTask(it.toString(), pool) {
-            Thread.sleep(1000)
-        })
-    }
-
     pool.start()
     readln()
-    pool.close()
+
+    pool.use {
+        thriceContinuedTwo.result()
+    }
 }

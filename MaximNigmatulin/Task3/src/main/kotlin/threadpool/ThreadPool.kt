@@ -10,6 +10,8 @@ class ThreadPool(nThreads: Int, private val workStrategy: WorkStrategy) : AutoCl
     private var continuationToken: Boolean = false
     private val threads: Array<Thread>
 
+    private var queueIdToRoundPush: Int = 0
+
     init {
         threads =
             (0 until nThreads).map {
@@ -29,13 +31,13 @@ class ThreadPool(nThreads: Int, private val workStrategy: WorkStrategy) : AutoCl
     }
 
     fun enqueue(task: INamedRunnable) {
-        val chosenId = threads[0].id
-
-        queueMap[chosenId]?.let {
+        val id = threads[queueIdToRoundPush].id
+        queueMap[id]?.let {
             synchronized(it) {
                 it.add(task)
             }
         }
+        queueIdToRoundPush = (queueIdToRoundPush.inc()) % threads.size
     }
 
     override fun close() {

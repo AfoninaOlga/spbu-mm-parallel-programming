@@ -11,11 +11,11 @@ class ThreadPoolTask<TResult>(
 ) : INamedRunnable {
 
     @Volatile
-    var _result: TResult? = null
+    private var _result: TResult? = null
 
     private var childTasks: BlockingQueue<INamedRunnable> = LinkedBlockingQueue()
 
-    fun isCompleted(): Boolean {
+    private fun isCompleted(): Boolean {
         return _result != null
     }
 
@@ -30,7 +30,8 @@ class ThreadPoolTask<TResult>(
 
     override fun run() {
         try {
-            _result = function()
+            result()
+        } catch (_: AggregateException) {
         } finally {
             log("[$name] finished")
             while (!childTasks.isEmpty()) {

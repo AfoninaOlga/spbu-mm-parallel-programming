@@ -4,6 +4,9 @@ plugins {
     application
 }
 
+val testCompile: Configuration by configurations.creating
+
+
 group = "org.example"
 version = "1.0-SNAPSHOT"
 
@@ -17,6 +20,7 @@ repositories {
 
 dependencies {
     testImplementation(kotlin("test"))
+    testImplementation("org.junit.jupiter:junit-jupiter-params")
 }
 
 tasks.test {

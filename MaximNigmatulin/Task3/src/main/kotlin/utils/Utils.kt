@@ -1,5 +1,6 @@
 package utils
 
+import Constants
 import java.time.LocalTime
 
 fun parseArgs(args: Array<String>): Int {
@@ -8,5 +9,6 @@ fun parseArgs(args: Array<String>): Int {
 }
 
 fun log(msg: String) {
-    println("${LocalTime.now()}--[thread ${Thread.currentThread().id}]: $msg")
+    if (Constants.SHOW_LOGS)
+        println("${LocalTime.now()}--[thread ${Thread.currentThread().id}]: $msg")
 }

@@ -10,7 +10,6 @@ fun main(args: Array<String>) {
 
     val root = ThreadPoolTask("root", pool) {
         Thread.sleep(1000)
-        throw RuntimeException("Root error!")
         2
     }
 
@@ -19,7 +18,7 @@ fun main(args: Array<String>) {
         2
     }
 
-    val twiceContinuedOne = root.continueWith {
+    val thriceContinuedOne = root.continueWith {
         Thread.sleep(1000)
         it * 2
     }.continueWith {
@@ -27,17 +26,18 @@ fun main(args: Array<String>) {
         it * 2
     }
 
-    val thriceContinuedTwo = twiceContinuedOne.continueWith {
-        Thread.sleep(1000)
-        it * 2
-    }
-
     pool.enqueue(root)
+
+    (0..10).forEach {
+        pool.enqueue(
+            ThreadPoolTask(it.toString(), pool) {
+                Thread.sleep(1000)
+                2
+            }
+        )
+    }
 
     pool.start()
     readln()
-
-    pool.use {
-        thriceContinuedTwo.result()
-    }
+    pool.close()
 }

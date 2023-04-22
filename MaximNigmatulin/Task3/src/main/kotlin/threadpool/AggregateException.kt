@@ -1,6 +1,6 @@
 package threadpool
 
-class AggregateException(private val e: Exception) : Exception() {
+class AggregateException(val aggregated: Exception) : Exception() {
     override val message: String
-        get() = "Aggregated: (${e.message})"
+        get() = "Aggregated: (${aggregated.message})"
 }

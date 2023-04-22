@@ -42,5 +42,6 @@ class ThreadPool(nThreads: Int, private val workStrategy: WorkStrategy) : AutoCl
 
     override fun close() {
         continuationToken = true
+        threads.forEach { it.join() }
     }
 }

@@ -1,5 +1,6 @@
 package threadpool.worker
 
+import Constants
 import extensions.stringify
 import threadpool.INamedRunnable
 import utils.log
@@ -11,7 +12,7 @@ class WorkSharingWorker(
     val tokenIsExpired: () -> Boolean,
 ) : Thread() {
 
-    private val threshold = 2
+    private val threshold = Constants.SHARING_THRESHOLD
 
     override fun run() {
         while (!tokenIsExpired()) {

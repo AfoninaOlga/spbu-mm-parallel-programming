@@ -1,11 +1,12 @@
 import threadpool.ThreadPoolTask
 import threadpool.ThreadPool
+import threadpool.WorkStrategy
 import utils.parseArgs
 
 
 fun main(args: Array<String>) {
     val nThreads = parseArgs(args)
-    val pool = ThreadPool(nThreads)
+    val pool = ThreadPool(nThreads, WorkStrategy.SHARING)
 
     val root = ThreadPoolTask("root", pool) {
         Thread.sleep(1000)
@@ -17,7 +18,7 @@ fun main(args: Array<String>) {
         it * 2
     }.continueWith {
         Thread.sleep(1000)
-        throw RuntimeException("TESTTEST")
+//        throw RuntimeException("TESTTEST")
         it * 2
     }
 
@@ -33,11 +34,11 @@ fun main(args: Array<String>) {
 
     pool.enqueue(root)
 
-//    (0..10).forEach {
-//        pool.enqueue(ThreadPoolTask(it.toString(), pool) {
-//            Thread.sleep(1000)
-//        })
-//    }
+    (0..10).forEach {
+        pool.enqueue(ThreadPoolTask(it.toString(), pool) {
+            Thread.sleep(1000)
+        })
+    }
 
     pool.start()
     readln()

@@ -1,29 +1,47 @@
 package threadpool
 
-import java.util.concurrent.BlockingQueue
+import threadpool.worker.WorkSharingWorker
+import threadpool.worker.WorkStealingWorker
+import java.util.Queue
 import java.util.concurrent.LinkedBlockingQueue
 
-class ThreadPool(nThreads: Int) : AutoCloseable {
-    private val threads: ArrayList<PoolWorker> = ArrayList()
-    private val queue: BlockingQueue<INamedRunnable> = LinkedBlockingQueue()
+enum class WorkStrategy {
+    STEALING,
+    SHARING
+}
+
+class ThreadPool(nThreads: Int, val workStrategy: WorkStrategy) : AutoCloseable {
+    private val queueMap: HashMap<Long, Queue<INamedRunnable>> = hashMapOf()
     private var continuationToken: Boolean = false
+    private val threads: Array<Thread>
 
     init {
-        for (i in 0 until nThreads) {
-            threads.add(PoolWorker(queue) { continuationToken })
+        threads =
+            (0 until nThreads).map {
+                if (workStrategy == WorkStrategy.SHARING)
+                    WorkSharingWorker(queueMap) { continuationToken }
+                else
+                    WorkStealingWorker(queueMap) { continuationToken }
+            }.toTypedArray()
+
+        threads.forEach {
+            queueMap[it.id] = LinkedBlockingQueue()
         }
     }
 
     fun start() {
-        threads.forEach {
-            it.start()
-        }
+        threads.forEach { it.start() }
     }
 
     fun enqueue(task: INamedRunnable) {
-        queue.put(task)
-    }
+        val chosenId = threads[0].id
 
+        queueMap[chosenId]?.let {
+            synchronized(it) {
+                it.add(task)
+            }
+        }
+    }
 
     override fun close() {
         continuationToken = true

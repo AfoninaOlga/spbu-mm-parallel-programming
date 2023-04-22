@@ -40,10 +40,7 @@ class ThreadPoolTask<TResult>(
     }
 
     fun <TNewResult> continueWith(f: (TResult) -> TNewResult): ThreadPoolTask<TNewResult> {
-        val newTask = ThreadPoolTask("$name+", pool) {
-            val parentResult = this.result()
-            f(parentResult)
-        }
+        val newTask = ThreadPoolTask("$name+", pool) { f(result()) }
 
         if (isCompleted()) {
             pool.enqueue(newTask)

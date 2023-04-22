@@ -1,12 +1,13 @@
 import org.junit.jupiter.api.Test
 import threadpool.ThreadPoolTask
 import threadpool.ThreadPool
+import threadpool.WorkStrategy
 import kotlin.test.assertEquals
 
 class ThreadPoolTest {
     @Test
     fun `result is counted`() {
-        val pool = ThreadPool(2)
+        val pool = ThreadPool(2, WorkStrategy.SHARING)
 
         val simpleTask = ThreadPoolTask("task", pool) {
             2 * 2
@@ -22,7 +23,7 @@ class ThreadPoolTest {
 
     @Test
     fun `result is counted with continuations`() {
-        val pool = ThreadPool(2)
+        val pool = ThreadPool(2, WorkStrategy.SHARING)
 
         val simpleTask = ThreadPoolTask("task", pool) {
             2 * 2

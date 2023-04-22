@@ -32,7 +32,7 @@ class ThreadPoolTask<TResult>(
         try {
             _result = function()
         } finally {
-            log("<$name> finished")
+            log("[$name] finished")
             while (!childTasks.isEmpty()) {
                 pool.enqueue(childTasks.take())
             }

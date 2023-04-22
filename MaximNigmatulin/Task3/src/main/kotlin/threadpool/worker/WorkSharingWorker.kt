@@ -6,7 +6,7 @@ import java.util.*
 import kotlin.collections.HashMap
 
 class WorkSharingWorker(
-    val queueMap: HashMap<Long, Queue<INamedRunnable>>,
+    val queueMap: HashMap<Long, Deque<INamedRunnable>>,
     val tokenIsExpired: () -> Boolean,
 ) : Thread() {
 

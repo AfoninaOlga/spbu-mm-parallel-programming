@@ -6,7 +6,7 @@ import utils.parseArgs
 
 fun main(args: Array<String>) {
     val nThreads = parseArgs(args)
-    val pool = ThreadPool(nThreads, WorkStrategy.SHARING)
+    val pool = ThreadPool(nThreads, WorkStrategy.STEALING)
 
     val root = ThreadPoolTask("root", pool) {
         Thread.sleep(1000)
@@ -18,7 +18,6 @@ fun main(args: Array<String>) {
         it * 2
     }.continueWith {
         Thread.sleep(1000)
-//        throw RuntimeException("TESTTEST")
         it * 2
     }
 

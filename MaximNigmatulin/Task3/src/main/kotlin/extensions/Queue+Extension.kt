@@ -1,9 +1,9 @@
 package extensions
 
 import threadpool.INamedRunnable
-import java.util.concurrent.BlockingQueue
+import java.util.Queue
 
-fun BlockingQueue<INamedRunnable>.stringify(): String {
+fun Queue<INamedRunnable>.stringify(): String {
     var s = ""
 
     synchronized(this) {

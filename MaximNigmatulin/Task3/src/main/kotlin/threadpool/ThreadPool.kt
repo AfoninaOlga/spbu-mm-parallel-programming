@@ -5,11 +5,6 @@ import threadpool.worker.WorkStealingWorker
 import java.util.Deque
 import java.util.concurrent.LinkedBlockingDeque
 
-enum class WorkStrategy {
-    STEALING,
-    SHARING
-}
-
 class ThreadPool(nThreads: Int, private val workStrategy: WorkStrategy) : AutoCloseable {
     private val queueMap: HashMap<Long, Deque<INamedRunnable>> = hashMapOf()
     private var continuationToken: Boolean = false

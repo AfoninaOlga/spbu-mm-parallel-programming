@@ -1,5 +1,6 @@
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.assertTimeout
+import org.junit.jupiter.api.assertTimeoutPreemptively
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
 import threadpool.AggregateException
@@ -67,8 +68,8 @@ class ThreadPoolTest {
             })
         }
 
-        pool.start()
-        assertTimeout(Duration.ofMillis(200)) {
+        assertTimeoutPreemptively(Duration.ofMillis(200)) {
+            pool.start()
             while (set.size != nThreads) {
                 Thread.sleep(0)
             }
@@ -100,7 +101,7 @@ class ThreadPoolTest {
             }
         }
 
-        assertEquals("Aggregated: $exceptionDescription", exception.message)
+        assertEquals("Aggregated: ($exceptionDescription)", exception.message)
     }
 
     @ParameterizedTest

@@ -7,6 +7,8 @@ import java.util.concurrent.LinkedBlockingDeque
 
 class ThreadPool(nThreads: Int, private val workStrategy: WorkStrategy) : AutoCloseable {
     private val queueMap: HashMap<Long, Deque<INamedRunnable>> = hashMapOf()
+
+    @Volatile
     private var continuationToken: Boolean = false
     private val threads: Array<Thread>
 
@@ -16,9 +18,9 @@ class ThreadPool(nThreads: Int, private val workStrategy: WorkStrategy) : AutoCl
         threads =
             (0 until nThreads).map {
                 if (workStrategy == WorkStrategy.SHARING)
-                    WorkSharingWorker(queueMap) { continuationToken }
+                    WorkSharingWorker(queueMap, ::continuationToken)
                 else
-                    WorkStealingWorker(queueMap) { continuationToken }
+                    WorkStealingWorker(queueMap, ::continuationToken)
             }.toTypedArray()
 
         threads.forEach {

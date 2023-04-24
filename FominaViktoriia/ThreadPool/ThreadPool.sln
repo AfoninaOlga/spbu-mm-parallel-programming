@@ -5,9 +5,7 @@ VisualStudioVersion = 17.5.33530.505
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ThreadPool", "ThreadPool\ThreadPool.csproj", "{CD6FF74D-095D-48D3-BF8A-F11AE60845C7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ThreadPool.Tests", "ThreadPool.Tests\ThreadPool.Tests.csproj", "{9C8CE463-EA30-4F80-801F-7777EF15F136}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ThreadPoolConsoleApp", "ThreadPoolConsoleApp\ThreadPoolConsoleApp.csproj", "{07E42971-DAC6-4173-8CE3-F8262F1ECD08}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ThreadPool.Tests", "ThreadPool.Tests\ThreadPool.Tests.csproj", "{9C8CE463-EA30-4F80-801F-7777EF15F136}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,10 +21,6 @@ Global
 		{9C8CE463-EA30-4F80-801F-7777EF15F136}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9C8CE463-EA30-4F80-801F-7777EF15F136}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9C8CE463-EA30-4F80-801F-7777EF15F136}.Release|Any CPU.Build.0 = Release|Any CPU
-		{07E42971-DAC6-4173-8CE3-F8262F1ECD08}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{07E42971-DAC6-4173-8CE3-F8262F1ECD08}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{07E42971-DAC6-4173-8CE3-F8262F1ECD08}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{07E42971-DAC6-4173-8CE3-F8262F1ECD08}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

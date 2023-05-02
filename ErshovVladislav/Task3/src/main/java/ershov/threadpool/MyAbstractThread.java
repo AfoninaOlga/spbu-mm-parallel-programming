@@ -21,6 +21,10 @@ public abstract class MyAbstractThread extends Thread {
         if (!this.isInterrupted()) {
             tasks.add(task);
         }
+
+        synchronized (this) {
+            this.notify();
+        }
     }
 
     public Queue<Object> getTasks() {
@@ -42,6 +46,6 @@ public abstract class MyAbstractThread extends Thread {
         }
     }
 
-    public abstract void executeTask(Queue<Object> tasks) throws InterruptedException;
+    protected abstract void executeTask(Queue<Object> tasks) throws InterruptedException;
 
 }

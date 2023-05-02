@@ -11,15 +11,19 @@ public class MySharingThread extends MyAbstractThread {
     }
 
     @Override
-    public void executeTask(Queue<Object> tasks) throws InterruptedException {
+    protected void executeTask(Queue<Object> tasks) throws InterruptedException {
         if (tasks.size() > 1 && !cancellationTokenSource.getCancellationToken()) {
             shareTask(tasks);
         }
 
         if (tasks.isEmpty()) {
-            Thread.sleep(1000);
-        } else {
-            IMyTask<?> task = (IMyTask<?>) tasks.poll();
+            synchronized (this) {
+                this.wait(1000);
+            }
+        }
+
+        IMyTask<?> task = (IMyTask<?>) tasks.poll();
+        if (task != null) {
             task.run();
             System.out.println(this.getName() + " executed task");
         }
@@ -29,6 +33,11 @@ public class MySharingThread extends MyAbstractThread {
         for (MyAbstractThread thread: threadPool.getThreads()) {
             if (thread.getTasks().size() < tasks.size()) {
                 thread.getTasks().add(tasks.poll());
+
+                synchronized (thread) {
+                    thread.notify();
+                }
+
                 return;
             }
         }

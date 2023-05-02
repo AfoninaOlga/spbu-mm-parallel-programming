@@ -11,7 +11,7 @@ public class MyStealingThread extends MyAbstractThread {
     }
 
     @Override
-    public void executeTask(Queue<Object> tasks) throws InterruptedException {
+    protected void executeTask(Queue<Object> tasks) throws InterruptedException {
         if (tasks.isEmpty() && !cancellationTokenSource.getCancellationToken()) {
             IMyTask<?> stolenTask = stealTask();
             if (stolenTask != null) {
@@ -20,9 +20,13 @@ public class MyStealingThread extends MyAbstractThread {
         }
 
         if (tasks.isEmpty()) {
-            Thread.sleep(1000);
-        } else {
-            IMyTask<?> task = (IMyTask<?>) tasks.poll();
+            synchronized (this) {
+                this.wait(1000);
+            }
+        }
+
+        IMyTask<?> task = (IMyTask<?>) tasks.poll();
+        if (task != null) {
             task.run();
             System.out.println(this.getName() + " executed task");
         }
@@ -37,4 +41,5 @@ public class MyStealingThread extends MyAbstractThread {
 
         return null;
     }
+
 }

@@ -18,12 +18,12 @@ public abstract class MyAbstractThread extends Thread {
     }
 
     public <TResult> void setTask(IMyTask<TResult> task) {
-        if (!this.isInterrupted()) {
+        if (!cancellationTokenSource.getCancellationToken()) {
             tasks.add(task);
-        }
 
-        synchronized (this) {
-            this.notify();
+            synchronized (this) {
+                this.notify();
+            }
         }
     }
 

@@ -4,11 +4,15 @@
     {
         private readonly List<MyThread> _threads;
 
+        private readonly List<AutoResetEvent> _autoResetEvents;
+
         private readonly CancellationTokenSource _cancellationTokenSource = new();
 
         private readonly CancellationToken _cancellationToken;
 
         private readonly Random _random = new();
+
+        private readonly object _locker = new();
 
         public MyThreadPool(int threadsSize, ThreadPoolWorkStrategy workStrategy = ThreadPoolWorkStrategy.Stealing)
         {
@@ -19,12 +23,16 @@
             ThreadPoolWorkStrategy = workStrategy;
             _threads = new List<MyThread>();
             _cancellationToken = _cancellationTokenSource.Token;
+            _autoResetEvents = new List<AutoResetEvent>();
 
             for (var i = 0; i < threadsSize; ++i)
             {
-                var thread = new MyThread(this, _cancellationToken);
+                var thread = new MyThread(this, _cancellationToken, i);
                 _threads.Add(thread);
                 thread.Start();
+
+                var autoResetEvent = new AutoResetEvent(false);
+                _autoResetEvents.Add(autoResetEvent);
             }
         }
 
@@ -35,11 +43,20 @@
                 var threadWithoutTasks = _threads.Find(x => x.IsEmptyTasks);
                 if (threadWithoutTasks != null)
                 {
-                    threadWithoutTasks.PushTask(task);
+                    lock (_locker)
+                    {
+                        threadWithoutTasks.PushTask(task);
+                        _autoResetEvents[threadWithoutTasks.Id].Set();
+                    }
                 }
                 else
                 {
-                    _threads[_random.Next() % _threads.Count].PushTask(task);
+                    int randomNumber = _random.Next() % _threads.Count;
+                    lock (_locker)
+                    {
+                        _threads[randomNumber].PushTask(task);
+                        _autoResetEvents[randomNumber].Set();
+                    }
                 }
             }
         }
@@ -47,6 +64,16 @@
         public void Dispose()
         {
             _cancellationTokenSource.Cancel();
+            foreach (var thread in _threads)
+            {
+                thread.Join();
+            }
+
+            foreach (var autoResetEvent in _autoResetEvents)
+            {
+                autoResetEvent.Dispose();
+            }
+
             _cancellationTokenSource.Dispose();
         }
 
@@ -55,5 +82,7 @@
         public ThreadPoolWorkStrategy ThreadPoolWorkStrategy { get; }
 
         public List<MyThread> Threads { get { return _threads; } }
+
+        public List<AutoResetEvent> AutoResetEvents { get { return _autoResetEvents; } }
     }
 }

@@ -6,7 +6,11 @@ namespace ThreadPool
     {
         private Thread? _thread;
 
+        private int _id;
+
         private readonly List<MyThread> _threadsInThreadPool;
+
+        private readonly List<AutoResetEvent> _autoResetEventsInThreadPool;
 
         private readonly ConcurrentQueue<Action> _tasks = new();
 
@@ -18,11 +22,15 @@ namespace ThreadPool
 
         private readonly Random _random = new();
 
-        public MyThread(MyThreadPool threadPool, CancellationToken cancellationToken)
+        private readonly object _locker = new();
+
+        public MyThread(MyThreadPool threadPool, CancellationToken cancellationToken, int threadId)
         {
             this._threadsInThreadPool = threadPool.Threads;
+            this._autoResetEventsInThreadPool = threadPool.AutoResetEvents;
             this._cancellationToken = cancellationToken;
             this._workStrategy = threadPool.ThreadPoolWorkStrategy;
+            this._id = threadId;
         }
 
         public void Start()
@@ -45,7 +53,7 @@ namespace ThreadPool
                                 }
                                 else
                                 {
-                                    Thread.Sleep(_waitTimeMSec);
+                                    _autoResetEventsInThreadPool[_id].WaitOne(_waitTimeMSec);                                                                        
                                 }
                             }
                             else if (!IsEmptyTasks)
@@ -55,7 +63,7 @@ namespace ThreadPool
                             }
                             else
                             {
-                                Thread.Sleep(_waitTimeMSec);
+                                _autoResetEventsInThreadPool[_id].WaitOne(_waitTimeMSec);
                             }
 
                             if (_cancellationToken.IsCancellationRequested)
@@ -74,7 +82,12 @@ namespace ThreadPool
                                 var taskToShare = PopTask();
                                 if (taskToShare != null)
                                 {
-                                    _threadsInThreadPool[_random.Next() % _threadsInThreadPool.Count].PushTask(taskToShare);
+                                    int randomNumber = _random.Next() % _threadsInThreadPool.Count;
+                                    lock (_locker)
+                                    {
+                                        _threadsInThreadPool[randomNumber].PushTask(taskToShare);
+                                        _autoResetEventsInThreadPool[randomNumber].Set();
+                                    }
                                 }
                             }
 
@@ -85,7 +98,7 @@ namespace ThreadPool
                             }
                             else
                             {
-                                Thread.Sleep(_waitTimeMSec);
+                                _autoResetEventsInThreadPool[_id].WaitOne(_waitTimeMSec);
                             }
 
                             if (_cancellationToken.IsCancellationRequested)
@@ -99,6 +112,18 @@ namespace ThreadPool
             });
             _thread.Start();
         }
+
+        public void Join()
+        {
+            if (_thread == null)
+            {
+                throw new InvalidOperationException("Thread was not started");
+            }
+
+            _thread!.Join();
+        }
+
+        public int Id { get { return _id; } }
 
         internal bool IsEmptyTasks => _tasks.IsEmpty;
 

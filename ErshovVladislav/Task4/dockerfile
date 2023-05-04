@@ -1,0 +1,8 @@
+FROM maven
+
+RUN apt-get update -y
+COPY /Task4 /Task4
+
+WORKDIR /Task4
+
+CMD mvn org.springframework.boot:spring-boot-maven-plugin:run

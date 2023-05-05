@@ -24,11 +24,7 @@ public class ExamSystem implements IExamSystem {
     }
 
     @Override
-    public int count() {
-        return examResults.size();
-    }
-
-    public long getValue() {
+    public long count() {
         return examResults.size();
     }
 

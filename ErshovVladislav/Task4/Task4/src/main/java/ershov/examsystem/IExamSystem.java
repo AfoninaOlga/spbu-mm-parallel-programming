@@ -8,6 +8,6 @@ public interface IExamSystem {
 
     public boolean contains(long studentId, long courseId);
 
-    public long count();
+    public int count();
 
 }

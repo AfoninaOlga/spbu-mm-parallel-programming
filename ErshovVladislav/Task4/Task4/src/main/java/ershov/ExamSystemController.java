@@ -32,7 +32,7 @@ public class ExamSystemController {
 	}
 
 	@RequestMapping("/count")
-	public long examSystemCount() {
+	public int examSystemCount() {
 		return examSystem.count();
 	}
 

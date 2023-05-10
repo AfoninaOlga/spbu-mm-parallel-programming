@@ -113,6 +113,7 @@ public class OptimisticSet<T> implements ISynchronizedSet<T> {
 			current.lock();
 			current = current.getNext();
 		}
+		current.lock();
 
 		try {
 			int count = 0;
@@ -129,6 +130,7 @@ public class OptimisticSet<T> implements ISynchronizedSet<T> {
 				current.unlock();
 				current = current.getNext();
 			}
+			current.unlock();
 		}
 	}
 

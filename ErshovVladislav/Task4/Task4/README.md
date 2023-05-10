@@ -28,19 +28,19 @@ docker run -p 8092:8092 examsystem
 - Добавление
 
 ```
-http://127.0.0.1:8092/add?student=111&exam=123
+http://127.0.0.1:8092/add?student=111&course=123
 ```
 
 - Удаление
 
 ```
-http://127.0.0.1:8092/remove?student=111&exam=123
+http://127.0.0.1:8092/remove?student=111&course=123
 ```
 
 - Проверка
 
 ```
-http://127.0.0.1:8092/contains?student=111&exam=123
+http://127.0.0.1:8092/contains?student=111&course=123
 ```
 
 - Количество

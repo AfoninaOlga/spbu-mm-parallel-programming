@@ -108,23 +108,24 @@ public class OptimisticSet<T> implements ISynchronizedSet<T> {
 
 	@Override
 	public int size() {
-		Node<T> current = head.getNext();
-		while (current != tail) {
+		Node<T> current = head;
+		while (!current.equals(tail)) {
 			current.lock();
 			current = current.getNext();
 		}
 
 		try {
 			int count = 0;
-			while (current != tail) {
+			current = head.getNext();
+			while (!current.equals(tail)) {
 				count++;
 				current = current.getNext();
 			}
 
 			return count;
 		} finally {
-			current = head.getNext();
-			while (current != tail) {
+			current = head;
+			while (!current.equals(tail)) {
 				current.unlock();
 				current = current.getNext();
 			}
@@ -133,9 +134,9 @@ public class OptimisticSet<T> implements ISynchronizedSet<T> {
 
 	private boolean validate(Node<T> previous, Node<T> current) {
 		Node<T> node = head;
-		while (node.getKey() < previous.getKey()) {
-			if (node.getKey() == previous.getKey()) {
-				return previous.getNext().getKey() == current.getKey();
+		while (node.getKey() <= previous.getKey()) {
+			if (node.equals(previous)) {
+				return previous.getNext().equals(current);
 			}
 
 			node = node.getNext();

@@ -13,20 +13,18 @@ public class ExamSystemController {
 	private final IExamSystem examSystem = new ExamSystem();
 
 	@RequestMapping("/add")
-	public void examSystemAdd(@RequestParam(value = "student") long student,
-			@RequestParam(value = "exam") long exam) {
+	public void examSystemAdd(@RequestParam(value = "student") long student, @RequestParam(value = "exam") long exam) {
 		examSystem.add(student, exam);
 	}
 
 	@RequestMapping("/remove")
-	public void examSystemRemove(@RequestParam(value = "student", required = false, defaultValue = "12") long student,
-			@RequestParam(value = "exam", required = true, defaultValue = "21") long exam) {
+	public void examSystemRemove(@RequestParam(value = "student") long student,
+			@RequestParam(value = "exam") long exam) {
 		examSystem.remove(student, exam);
 	}
 
 	@RequestMapping("/contains")
-	public boolean examSystemContains(
-			@RequestParam(value = "student") long student,
+	public boolean examSystemContains(@RequestParam(value = "student") long student,
 			@RequestParam(value = "exam") long exam) {
 		return examSystem.contains(student, exam);
 	}

@@ -6,12 +6,14 @@ import java.util.concurrent.locks.ReentrantLock;
 public class Node<T> {
 
 	private final int key;
-	private T value;
+	private final T value;
 	private Node<T> next;
-	private final Lock locker = new ReentrantLock(); // TODO
+	private volatile boolean isMarked = false;
+	private final Lock locker = new ReentrantLock();
 
 	public Node(int key) {
 		this.key = key;
+		this.value = null;
 	}
 
 	public Node(int key, T value) {
@@ -31,8 +33,16 @@ public class Node<T> {
 		return value;
 	}
 
+	public boolean isMarked() {
+		return isMarked;
+	}
+
 	public void lock() {
 		locker.lock();
+	}
+
+	public void mark() {
+		isMarked = true;
 	}
 
 	public void setNext(Node<T> next) {

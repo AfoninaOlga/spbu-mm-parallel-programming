@@ -13,7 +13,8 @@ public class ExamSystemController {
 	private final IExamSystem examSystem = new ExamSystem();
 
 	@RequestMapping("/add")
-	public void examSystemAdd(@RequestParam(value = "student") long student, @RequestParam(value = "course") long exam) {
+	public void examSystemAdd(@RequestParam(value = "student") long student,
+			@RequestParam(value = "course") long exam) {
 		examSystem.add(student, exam);
 	}
 

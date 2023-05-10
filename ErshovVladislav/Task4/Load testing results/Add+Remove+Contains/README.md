@@ -9,7 +9,7 @@
 
 
 #### Диаграммы распределения времени
-![Bar+Box Graph](C:\Github\spbu-mm-parallel-programming\ErshovVladislav\Task4\Load testing results\Add+Remove+Contains\Bar+Box Graph.png)
+![Bar+Box Graph](Bar+Box Graph.png)
 
 #### Диаграмма количества пользователей
 

@@ -4,6 +4,8 @@
 
 - `Docker` - скачать с официального сайта https://www.docker.com/products/docker-desktop/
 - Опционально `Postman` (для проверки REST запросов) - https://www.postman.com/downloads/
+- Опционально `JMetter` (для нагрузочного тестирования) - https://jmeter.apache.org/download_jmeter.cgi
+- В папке `Load testing results` лежит конфигурация для `JMetter`
 
 ### Запуск docker-image
 
@@ -67,6 +69,3 @@ http://127.0.0.1:8092/v1/count
 ```
 http://127.0.0.1:8092/v2/count
 ```
-
-
-

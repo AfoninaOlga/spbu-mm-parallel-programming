@@ -5,3 +5,12 @@
 - Ramp-up period = 5 seconds
 - Отказы обслуживания по тайм-ауту (больше 3 секунд) начиная с примерно 500 записей в множестве
 - После тестирования остается примерно 1100 записей
+
+
+
+#### Диаграммы распределения времени
+![Bar+Box Graph](C:\Github\spbu-mm-parallel-programming\ErshovVladislav\Task4\Load testing results\Add+Remove+Contains\Bar+Box Graph.png)
+
+#### Диаграмма количества пользователей
+
+![Active threads over time](C:\Github\spbu-mm-parallel-programming\ErshovVladislav\Task4\Load testing results\Add+Remove+Contains\Active threads over time.png)

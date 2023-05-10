@@ -25,28 +25,47 @@ docker run -p 8092:8092 examsystem
 
 #### Примеры запросов
 
+- Существует две реализации множества - `OptimisticSet` и `LazySet`
+- Чтобы выбрать вариант множества нужно использовать префикс `/v1` и `/v2` соответственно
+
 - Добавление
 
 ```
-http://127.0.0.1:8092/add?student=111&course=123
+http://127.0.0.1:8092/v1/add?student=111&course=123
+```
+
+```
+http://127.0.0.1:8092/v2/add?student=111&course=123
 ```
 
 - Удаление
 
 ```
-http://127.0.0.1:8092/remove?student=111&course=123
+http://127.0.0.1:8092/v1/remove?student=111&course=123
+```
+
+```
+http://127.0.0.1:8092/v2/remove?student=111&course=123
 ```
 
 - Проверка
 
 ```
-http://127.0.0.1:8092/contains?student=111&course=123
+http://127.0.0.1:8092/v1/contains?student=111&course=123
+```
+
+```
+http://127.0.0.1:8092/v2/contains?student=111&course=123
 ```
 
 - Количество
 
 ```
-http://127.0.0.1:8092/count
+http://127.0.0.1:8092/v1/count
+```
+
+```
+http://127.0.0.1:8092/v2/count
 ```
 
 

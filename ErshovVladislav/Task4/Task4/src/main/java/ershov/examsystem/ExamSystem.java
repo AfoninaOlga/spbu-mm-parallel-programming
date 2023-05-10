@@ -1,12 +1,12 @@
 package ershov.examsystem;
 
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
+import syncronizedset.ISynchronizedSet;
+import syncronizedset.OptimisticSet;
 
 public class ExamSystem implements IExamSystem {
 
-	private final Set<Map.Entry<Long, Long>> examResults = new HashSet<>();
+	private final ISynchronizedSet<Map.Entry<Long, Long>> examResults = new OptimisticSet<>();
 
     @Override
     public void add(long studentId, long courseId) {

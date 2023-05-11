@@ -1,8 +1,5 @@
 package spbu.models
 
-import kotlinx.serialization.Serializable
-
-@Serializable
 data class StudentRecord(val studentId: Long, val courseId: Long) {
     override fun hashCode(): Int {
         return (65537 * studentId + courseId.hashCode()).toInt()

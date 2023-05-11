@@ -42,6 +42,8 @@ curl -X DELETE "http://localhost:8080/<type>?studentId=2&courseId=0"
 ```
 ## Testing
 
+Performance testing application: https://jmeter.apache.org
+
 Tests configuration:
 |                        | Contains, % | Add, % | Remove, % | Users count | Ramp-up time, s | Requests per user per test | Throughput, rps* | Sync type          |
 |------------------------|-------------|--------|-----------|-------------|-----------------|----------------------------|------------------|--------------------|

@@ -6,3 +6,5 @@
 - Соотношение запросов Add - 0%, Remove - 0%, Contains - 100%
 - Тестирование длится примерно 90 секунд
 - До тестирования есть примерно 20000 записей
+
+![Query execution time distribution diagram.png](https://github.com/Stanislav-Sartasov/spbu-mm-parallel-programming/blob/ErshovVladislav/ErshovVladislav/Task4/Load%20testing%20results/Only%20contains%20response/Query%20execution%20time%20distribution%20diagram.png)

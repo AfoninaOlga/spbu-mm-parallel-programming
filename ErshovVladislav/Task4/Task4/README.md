@@ -11,6 +11,8 @@
 
 - Запустить Docker (на windows открыть Docker Dekstop)
 
+- Переключить на Linux-контейнеры
+
 - Из корня Task4 (в корне лежит еще одна папка Task4 и dockerfile) запустить
 
 ```

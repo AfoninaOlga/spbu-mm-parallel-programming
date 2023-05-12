@@ -66,4 +66,4 @@ GET http://localhost/api/count
 ## Load tests
 Load test were run with [JMeter](https://jmeter.apache.org/). For each test system was initialized with 1000 records.
 
-![boxplots](LoadTest/boxplots.jpg)
+![boxplots](LoadTests/boxplots.jpg)

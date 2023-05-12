@@ -64,6 +64,17 @@ Get number of records in system (ExamSystem **Count**):
 GET http://localhost/api/count
 ```
 ## Load tests
-Load test were run with [JMeter](https://jmeter.apache.org/). For each test system was initialized with 1000 records.
+Load test were run with [JMeter](https://jmeter.apache.org/). For each test system was initialized with the same 1000 records.
+
+Test plans (`.jmx` files) can be found in `LoadTests` folder.
+
+### Boxplots
 
 ![boxplots](LoadTests/boxplots.jpg)
+
+### Max user count
+Response timeout — 10 seconds, system initialized with 1000 records, test run time — 3 minutes.
+Results:
+
+- System with lazy set — 10200 users, ~40K records·
+- System with fine-grained set — 3400 users, ~2,5K records·

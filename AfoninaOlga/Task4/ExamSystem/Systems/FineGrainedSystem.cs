@@ -4,7 +4,7 @@ namespace ExamSystem.Systems;
 
 public class FineGrainedSystem : IExamSystem
 {
-    private readonly LazyTable<Tuple<long, long>> _table = new();
+    private readonly FineGrainedTable<Tuple<long, long>> _table = new();
 
     public void Add(long studentId, long courseId)
     {

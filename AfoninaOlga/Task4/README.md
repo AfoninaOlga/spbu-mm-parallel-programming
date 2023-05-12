@@ -37,7 +37,7 @@ docker build -t examsystem:latest .
 ### Run project
 
 ```sh
-docker run -p 80:80 examsystem <System type>
+docker run -p 8080:80 examsystem <System type>
 ```
 `<System type>` may be one of the following:
 
@@ -63,3 +63,7 @@ Get number of records in system (ExamSystem **Count**):
 ```http request
 GET http://localhost/api/count
 ```
+## Load tests
+Load test were run with [JMeter](https://jmeter.apache.org/). For each test system was initialized with 1000 records.
+
+![boxplots](LoadTest/boxplots.jpg)

@@ -11,7 +11,7 @@ import ershov.p2pchat.P2PChat;
 @RestController
 public class P2PChatController {
 
-	private final int PORT = 8093;
+	private final int PORT = 8092;
 	private P2PChat p2PChat = null;
 
 	@RequestMapping("/startWithoutConnect")

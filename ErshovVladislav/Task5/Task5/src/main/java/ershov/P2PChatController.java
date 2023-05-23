@@ -11,21 +11,20 @@ import ershov.p2pchat.P2PChat;
 @RestController
 public class P2PChatController {
 
-	private final int PORT = 8092;
 	private P2PChat p2PChat = null;
 
 	@RequestMapping("/startWithoutConnect")
-	public void startWithoutConnect() {
+	public void startWithoutConnect(@RequestParam(value = "port") int port) {
 		if (p2PChat == null) {
-			p2PChat = new P2PChat(PORT);
+			p2PChat = new P2PChat(port);
 		}
 	}
 
 	@RequestMapping("/startWithConnect")
-	public void startWithConnect(@RequestParam(value = "ip") String ip) {
+	public void startWithConnect(@RequestParam(value = "ip") String ip, @RequestParam(value = "port") int port) {
 		if (p2PChat == null) {
 			try {
-				p2PChat = new P2PChat(ip, PORT);
+				p2PChat = new P2PChat(ip, port);
 			} catch (IOException e) {
 				System.out.println(e.getMessage());
 			}

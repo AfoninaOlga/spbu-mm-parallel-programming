@@ -55,7 +55,7 @@ public class P2PChat extends Thread implements AutoCloseable {
     @Override
     public void run() {
 		try (ServerSocket server = new ServerSocket(port)) {
-			server.setSoTimeout(1000);
+			server.setSoTimeout(10000);
             while (true) {
             	try (Socket socket = server.accept()) {
             		P2PChatSocket p2PChatSocket = new P2PChatSocket(socket, this);

@@ -52,7 +52,9 @@ public class P2PChatSocket extends Thread implements AutoCloseable {
                 p2PChat.getMessages().add(message);
                 System.out.println("P2PChatSocket:3");
 
-                if (message.contains("Socket:")) {
+                if (message == null) {
+                	continue;
+                } else if (message.contains("Socket:")) {
                 	p2PChat.connectToSocket(message.split(":")[1]);
                 } else if (message.equals("Stop")) {
                     close();

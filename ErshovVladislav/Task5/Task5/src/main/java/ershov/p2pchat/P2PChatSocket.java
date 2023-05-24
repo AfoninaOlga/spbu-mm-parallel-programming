@@ -43,7 +43,7 @@ public class P2PChatSocket extends Thread implements AutoCloseable {
 
     @Override
     public void run() {
-        String message;
+        String message = "";
         try {
             while (true) {
             	System.out.println("P2PChatSocket:1");

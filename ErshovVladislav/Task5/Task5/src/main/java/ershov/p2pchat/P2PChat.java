@@ -21,7 +21,6 @@ public class P2PChat extends Thread implements AutoCloseable {
     	this.port = port;
     	this.thread = new Thread(this);
 
-    	System.out.println("P2PChat:startWithoutConnect");
     	thread.start();
     }
 

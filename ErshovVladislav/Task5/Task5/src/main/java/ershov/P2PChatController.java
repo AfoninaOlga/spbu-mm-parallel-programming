@@ -46,11 +46,14 @@ public class P2PChatController {
 		}
 	}
 
-	@RequestMapping("/getMessagesCount")
+	@RequestMapping("/stop")
 	public void getMessagesCount() {
 		if (p2PChat != null) {
-			System.out.println(p2PChat.getMessages().size());
-			p2PChat.getMessages().size();
+			try {
+				p2PChat.close();
+			} catch (Exception e) {
+				System.out.println(e.getMessage());
+			}
 		}
 	}
 

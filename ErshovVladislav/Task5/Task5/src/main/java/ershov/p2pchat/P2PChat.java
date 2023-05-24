@@ -84,6 +84,7 @@ public class P2PChat extends Thread implements AutoCloseable {
 
     public void send(String message) {
     	System.out.println("P2PChat:1:" + message);
+    	messages.add(message);
     	for (P2PChatSocket p2PChatSocket: p2PChatSockets) {
     		System.out.println("P2PChat:2");
     		p2PChatSocket.send(message);

@@ -45,4 +45,11 @@ public class P2PChatController {
 		}
 	}
 
+	@RequestMapping("/getMessagesCount")
+	public void getMessagesCount() {
+		if (p2PChat != null) {
+			p2PChat.getMessages().size();
+		}
+	}
+
 }

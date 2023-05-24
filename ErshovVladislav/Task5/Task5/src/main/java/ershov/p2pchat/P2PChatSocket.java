@@ -66,15 +66,15 @@ public class P2PChatSocket extends Thread implements AutoCloseable {
         	System.out.println("P2PChatSocket:5");
         	System.out.println(e.getMessage());
         } finally {
-        	try {
-        		System.out.println("P2PChatSocket:6");
-	        	in.close();
-				out.close();
-				socket.close();
-			} catch (IOException e) {
-				System.out.println("P2PChatSocket:7");
-				System.out.println(e.getMessage());
-			}
+//        	try {
+//        		System.out.println("P2PChatSocket:6");
+//	        	in.close();
+//				out.close();
+//				socket.close();
+//			} catch (IOException e) {
+//				System.out.println("P2PChatSocket:7");
+//				System.out.println(e.getMessage());
+//			}
         }
     }
 

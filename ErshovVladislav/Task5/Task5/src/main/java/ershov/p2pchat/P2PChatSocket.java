@@ -47,13 +47,14 @@ public class P2PChatSocket extends Thread implements AutoCloseable {
         try {
             while (true) {
             	try {
-            		System.out.println(in.ready());
-            		message = in.readLine();
+            		if (in.ready()) {
+            			System.out.println("P2PChatSocket:1" + message);
+            			message = in.readLine();
+            		}
             	} catch (IOException e) {
-            		// System.out.println("P2PChatSocket:2" + e.getMessage());
+            		System.out.println("P2PChatSocket:2" + e.getMessage());
             	}
 
-            	System.out.println("P2PChatSocket:3" + message);
                 if (message == null || message.equals("")) {
                 	continue;
                 } else if (message.contains("Socket:")) {
@@ -62,6 +63,7 @@ public class P2PChatSocket extends Thread implements AutoCloseable {
                     close();
                 }
 
+                System.out.println("P2PChatSocket:3" + message);
                 p2PChat.getMessages().add(message);
 
                 if (this.isInterrupted()) {

@@ -27,6 +27,7 @@ public class P2PChatSocket extends Thread implements AutoCloseable {
         this.out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
         this.p2PChat = p2PChat;
         this.thread = new Thread(this);
+        System.out.println("P2PChatSocket:start");
 
     	thread.start();
 	}
@@ -45,27 +46,34 @@ public class P2PChatSocket extends Thread implements AutoCloseable {
         String message;
         try {
             while (true) {
+            	System.out.println("P2PChatSocket:1");
             	message = in.readLine();
+            	System.out.println("P2PChatSocket:2");
                 p2PChat.getMessages().add(message);
+                System.out.println("P2PChatSocket:3");
 
                 if (message.contains("Socket:")) {
                 	p2PChat.connectToSocket(message.split(":")[1]);
                 } else if (message.equals("Stop")) {
                     close();
                 }
-
+                System.out.println("P2PChatSocket:4");
                 if (this.isInterrupted()) {
+                	System.out.println("P2PChatSocket:break");
             		break;
             	}
             }
         } catch (Exception e) {
+        	System.out.println("P2PChatSocket:5");
         	System.out.println(e.getMessage());
         } finally {
         	try {
+        		System.out.println("P2PChatSocket:6");
 	        	in.close();
 				out.close();
 				socket.close();
 			} catch (IOException e) {
+				System.out.println("P2PChatSocket:7");
 				System.out.println(e.getMessage());
 			}
         }
@@ -77,9 +85,13 @@ public class P2PChatSocket extends Thread implements AutoCloseable {
     	}
 
         try {
+        	System.out.println("P2PChatSocket:8");
             out.write(message + "\n");
+            System.out.println("P2PChatSocket:9");
             out.flush();
+            System.out.println("P2PChatSocket:10");
         } catch (IOException e) {
+        	System.out.println("P2PChatSocket:11");
         	System.out.println(e.getMessage());
         }
     }

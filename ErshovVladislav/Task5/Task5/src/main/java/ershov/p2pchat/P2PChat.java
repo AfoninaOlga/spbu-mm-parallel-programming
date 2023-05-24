@@ -21,6 +21,7 @@ public class P2PChat extends Thread implements AutoCloseable {
     	this.port = port;
     	this.thread = new Thread(this);
 
+    	System.out.println("P2PChat:startWithoutConnect");
     	thread.start();
     }
 
@@ -61,9 +62,10 @@ public class P2PChat extends Thread implements AutoCloseable {
             		P2PChatSocket p2PChatSocket = new P2PChatSocket(socket, this);
             		sendSocketsToNewSocket(p2PChatSocket);
             		p2PChatSockets.add(p2PChatSocket);
-            		System.out.println("isConnected");
-            		p2PChatSocket.send("isConnected");
+            		System.out.println("P2PChat isConnected");
+            		//p2PChatSocket.send("isConnected");
 	            } catch (IOException e) {
+	            	System.out.println("P2PChat small:" + e.getMessage());
 	    			System.out.println(e.getMessage());
 	    		}
 
@@ -72,6 +74,7 @@ public class P2PChat extends Thread implements AutoCloseable {
             	}
             }
 		} catch (IOException e) {
+			System.out.println("P2PChat big:" + e.getMessage());
 			System.out.println(e.getMessage());
 		} finally {
 			p2PChatSockets.clear();
@@ -80,8 +83,9 @@ public class P2PChat extends Thread implements AutoCloseable {
     }
 
     public void send(String message) {
-    	System.out.println(message);
+    	System.out.println("P2PChat:1:" + message);
     	for (P2PChatSocket p2PChatSocket: p2PChatSockets) {
+    		System.out.println("P2PChat:2");
     		p2PChatSocket.send(message);
     	}
     }

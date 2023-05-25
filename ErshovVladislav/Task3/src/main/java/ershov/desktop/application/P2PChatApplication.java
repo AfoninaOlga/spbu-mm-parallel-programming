@@ -1,24 +1,14 @@
-package ershov;
+package ershov.desktop.application;
 
-import org.apache.catalina.LifecycleException;
-//import org.springframework.boot.SpringApplication;
-//import org.springframework.boot.autoconfigure.SpringBootApplication;
 import javafx.application.Application;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
 
-//@SpringBootApplication
-public class Main extends Application {
+public class P2PChatApplication extends Application {
 
-	public static void main(String[] args) throws LifecycleException {
-		//SpringApplication.run(Main.class, args);
-
-		launch(args);
-	}
-
-	@Override
+    @Override
     public void init() throws Exception {
         super.init();
         System.out.println("Inside init() method! Perform necessary initializations here.");
@@ -41,4 +31,7 @@ public class Main extends Application {
         System.out.println("Inside stop() method! Destroy resources. Perform Cleanup.");
     }
 
+    public static void main(String[] args) {
+        launch(args);
+    }
 }

@@ -62,9 +62,8 @@ public class P2PChatSocket extends Thread implements AutoCloseable {
             	}
             }
         } catch (Exception e) {
-			System.out.println(e.getMessage());
+        	System.out.println(e.getMessage());
         } finally {
-        	System.out.println("P2P Chat Socket stop");
         	try {
 	        	in.close();
 				out.close();

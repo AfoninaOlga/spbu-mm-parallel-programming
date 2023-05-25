@@ -43,9 +43,9 @@ public class P2PChatSocket extends Thread {
 			while (true) {
 				message = in.readLine();
 
-				if (message.contains("User:")) {
+				if (message != null && message.contains("User:")) {
 					p2PChat.connectToSocket(message.split(":")[1]);
-				} else if (message.equals("Stop")) {
+				} else if (message != null && message.equals("Stop")) {
 					this.interrupt();
 				}
 

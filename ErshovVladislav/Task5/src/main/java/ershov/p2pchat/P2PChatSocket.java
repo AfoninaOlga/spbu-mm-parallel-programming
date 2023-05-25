@@ -8,7 +8,7 @@ import java.io.OutputStreamWriter;
 import java.net.InetAddress;
 import java.net.Socket;
 
-public class P2PChatSocket extends Thread implements AutoCloseable {
+public class P2PChatSocket extends Thread {
 
 	/** This thread. */
     private final Thread thread;
@@ -20,20 +20,17 @@ public class P2PChatSocket extends Thread implements AutoCloseable {
     private final BufferedWriter out;
     /** P2P chat. */
     private final P2PChat p2PChat;
+    private volatile CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
 
-	public P2PChatSocket(Socket socket, P2PChat p2PChat) throws IOException {
+	public P2PChatSocket(Socket socket, P2PChat p2PChat, CancellationTokenSource cancellationTokenSource) throws IOException {
 		this.socket = socket;
 		this.in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         this.out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
         this.p2PChat = p2PChat;
+        this.cancellationTokenSource = cancellationTokenSource;
         this.thread = new Thread(this);
 
     	thread.start();
-	}
-
-	@Override
-	public void close() throws Exception {
-    	thread.interrupt();
 	}
 
     public InetAddress getSocketInetAddress() {
@@ -52,12 +49,16 @@ public class P2PChatSocket extends Thread implements AutoCloseable {
                 } else if (message.contains("Socket:")) {
                 	p2PChat.connectToSocket(message.split(":")[1]);
                 } else if (message.equals("Stop")) {
-                    close();
+                	this.interrupt();
                 }
 
-                p2PChat.getMessages().add(message);
+                p2PChat.getMessages().add("Message from " + socket.getInetAddress() + ": " + message);
 
-                if (thread.isInterrupted()) {
+                if (cancellationTokenSource.getCancellationToken()) {
+                    this.interrupt();
+                }
+
+                if (this.isInterrupted()) {
             		break;
             	}
             }
@@ -81,7 +82,7 @@ public class P2PChatSocket extends Thread implements AutoCloseable {
     	}
 
         try {
-            out.write("Message from " + socket.getInetAddress() + ": " + message + "\n");
+            out.write(message + "\n");
             out.flush();
         } catch (IOException e) {
         	System.out.println(e.getMessage());

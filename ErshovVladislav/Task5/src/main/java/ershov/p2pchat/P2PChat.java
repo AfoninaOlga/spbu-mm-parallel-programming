@@ -16,18 +16,10 @@ public class P2PChat extends Thread implements AutoCloseable {
 	private final List<P2PChatSocket> p2PChatSockets = Collections.synchronizedList(new ArrayList<>());
 	/** List for all messages. */
 	private final List<String> messages = Collections.synchronizedList(new ArrayList<>());
+	private volatile CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
 
 	public P2PChat(int port) {
 		this.port = port;
-		this.thread = new Thread(this);
-
-		thread.start();
-	}
-
-	public P2PChat(String ip, int port) throws UnknownHostException, IOException {
-		this.port = port;
-		Socket socket = new Socket(ip, port);
-		p2PChatSockets.add(new P2PChatSocket(socket, this));
 		this.thread = new Thread(this);
 
 		thread.start();
@@ -37,15 +29,14 @@ public class P2PChat extends Thread implements AutoCloseable {
 	public void close() throws Exception {
 		for (P2PChatSocket p2PChatSocket : p2PChatSockets) {
 			p2PChatSocket.send("Stop");
-			p2PChatSocket.close();
 		}
 
-		thread.interrupt();
+		cancellationTokenSource.setCancelToken();
 	}
 
 	public void connectToSocket(String ip) throws UnknownHostException, IOException {
 		Socket socket = new Socket(ip, port);
-		p2PChatSockets.add(new P2PChatSocket(socket, this));
+		p2PChatSockets.add(new P2PChatSocket(socket, this, cancellationTokenSource));
 	}
 
 	public List<String> getMessages() {
@@ -59,14 +50,18 @@ public class P2PChat extends Thread implements AutoCloseable {
 			while (true) {
 				try {
 					Socket socket = server.accept();
-					P2PChatSocket p2PChatSocket = new P2PChatSocket(socket, this);
+					P2PChatSocket p2PChatSocket = new P2PChatSocket(socket, this, cancellationTokenSource);
 					sendSocketsToNewSocket(p2PChatSocket);
 					p2PChatSockets.add(p2PChatSocket);
 				} catch (IOException e) {
 					System.out.println(e.getMessage());
 				}
 
-				if (thread.isInterrupted()) {
+				if (cancellationTokenSource.getCancellationToken()) {
+                    this.interrupt();
+                }
+
+				if (this.isInterrupted()) {
 					break;
 				}
 			}
@@ -91,5 +86,5 @@ public class P2PChat extends Thread implements AutoCloseable {
 			newSocket.send("Socket:" + p2PChatSocket.getSocketInetAddress());
 		}
 	}
-
+	
 }

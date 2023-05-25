@@ -1,44 +1,70 @@
-package ershov;
+package main.java.ershov;
 
-import org.apache.catalina.LifecycleException;
-//import org.springframework.boot.SpringApplication;
-//import org.springframework.boot.autoconfigure.SpringBootApplication;
-import javafx.application.Application;
-import javafx.geometry.Pos;
-import javafx.scene.Scene;
-import javafx.scene.control.Label;
-import javafx.stage.Stage;
+import main.java.ershov.mytask.IMyTask;
+import main.java.ershov.mytask.MyTask;
+import main.java.ershov.threadpool.ThreadPool;
+import main.java.ershov.threadpool.WorkStrategy;
 
-//@SpringBootApplication
-public class Main extends Application {
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
 
-	public static void main(String[] args) throws LifecycleException {
-		//SpringApplication.run(Main.class, args);
+/**
+ * Main class for ThreadPool.
+ *
+ * @author yersh2000@gmail.com
+ */
+public class Main {
 
-		launch(args);
-	}
+    public static void main(String[] args) throws InterruptedException, IOException, IllegalArgumentException {
+        if (args == null || args.length < 2 || args[0] == null || args[1] == null) {
+            throw new IllegalArgumentException("Number of threads entered incorrectly");
+        }
 
-	@Override
-    public void init() throws Exception {
-        super.init();
-        System.out.println("Inside init() method! Perform necessary initializations here.");
-    }
+        int numOfThreads;
+        try {
+            numOfThreads = Integer.parseInt(args[0]);
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("Number of threads entered incorrectly");
+        }
 
-    @Override
-    public void start(Stage primaryStage) throws Exception {
-        Label label = new Label("Hello World");
-        label.setAlignment(Pos.CENTER);
-        Scene scene = new Scene(label, 500, 350);
+        WorkStrategy workStrategy;
+        if (args[1].equals("workStealing")) {
+            workStrategy = WorkStrategy.WORK_STEALING;
+        } else {
+            workStrategy = WorkStrategy.WORK_SHARING;
+        }
 
-        primaryStage.setTitle("Hello World Application");
-        primaryStage.setScene(scene);
-        primaryStage.show();
-    }
+        ThreadPool threadPool = new ThreadPool(numOfThreads, workStrategy);
 
-    @Override
-    public void stop() throws Exception {
-        super.stop();
-        System.out.println("Inside stop() method! Destroy resources. Perform Cleanup.");
+        List<IMyTask<?>> tasks = new ArrayList<>();
+        for (int i = 0; i < 2; i++) {
+            IMyTask<String> task = new MyTask<>(s -> "$", threadPool);
+            task.continueWith(s -> s + "#");
+            task.continueWith(s -> s + "&");
+
+            tasks.add(task);
+
+            IMyTask<Integer> task2 = new MyTask<>(s -> 2, threadPool);
+            task2.continueWith(s -> s + 3);
+            tasks.add(task2);
+        }
+
+        for (IMyTask<?> task: tasks) {
+            threadPool.enqueue(task);
+        }
+        threadPool.run();
+
+        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+        while(reader.readLine() == null) {
+            System.out.println("Step");
+            Thread.sleep(1000);
+        }
+        reader.close();
+
+        threadPool.close();
     }
 
 }

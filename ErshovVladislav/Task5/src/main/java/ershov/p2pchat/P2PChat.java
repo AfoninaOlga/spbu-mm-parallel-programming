@@ -37,6 +37,7 @@ public class P2PChat extends Thread implements AutoCloseable {
 	public void connectToSocket(String ip) throws UnknownHostException, IOException {
 		Socket socket = new Socket(ip, port);
 		p2PChatSockets.add(new P2PChatSocket(socket, this, cancellationTokenSource));
+		messages.add("Connect to " + socket.getInetAddress());
 	}
 
 	public List<String> getMessages() {

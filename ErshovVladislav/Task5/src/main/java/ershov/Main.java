@@ -74,7 +74,7 @@ public class Main extends Application {
 
 			@Override
 			public void handle(ActionEvent event) {
-				chat.send(message);
+				chat.sendToAll(message);
 				sendTextField.setText("");
 				refreshChat();
 			}
@@ -112,7 +112,7 @@ public class Main extends Application {
 			@Override
 			public void handle(ActionEvent event) {
 				try {
-					chat.connectToSocket(ip);
+					chat.connect(ip);
 					errorMessageText.setText("");
 					refreshChat();
 				} catch (IOException e) {

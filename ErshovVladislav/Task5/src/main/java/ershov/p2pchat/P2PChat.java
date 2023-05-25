@@ -10,35 +10,61 @@ public class P2PChat extends Thread implements AutoCloseable {
 
 	/** Port for server and client sockets. */
 	private final int port;
-	/** List for p2p chat sockets. */
-	private final List<P2PChatSocket> p2PChatSockets = Collections.synchronizedList(new ArrayList<>());
+	/** List for p2p chat users ips. */
+	private final List<InetAddress> p2PChatUserIps = Collections.synchronizedList(new ArrayList<>());
 	/** List for all messages. */
 	private final List<String> messages = Collections.synchronizedList(new ArrayList<>());
 	private volatile CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
 
 	public P2PChat(int port) {
 		this.port = port;
-
 		start();
 	}
 
 	@Override
 	public void close() throws Exception {
-		for (P2PChatSocket p2PChatSocket : p2PChatSockets) {
-			p2PChatSocket.send("Stop");
-		}
-
+		sendToAll("Stop");
 		cancellationTokenSource.setCancelToken();
 	}
 
-	public void connectToSocket(String ip) throws UnknownHostException, IOException {
-		Socket socket = new Socket(ip, port);
-		p2PChatSockets.add(new P2PChatSocket(socket, this, cancellationTokenSource));
-		messages.add("Connect to " + socket.getInetAddress());
+	public void connect(String newP2PChatUserIp) throws UnknownHostException {
+		connect(InetAddress.getByName(newP2PChatUserIp));
+	}
+
+	private void connect(InetAddress newP2PChatUserIp) {
+		sendUserIpsToNewUserIp(newP2PChatUserIp);
 	}
 
 	public List<String> getMessages() {
 		return messages;
+	}
+
+	private void recieve(Socket socket) {
+		String message = "";
+		try (BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {
+			while (!in.ready()) {
+			}
+
+			message = in.readLine();
+		} catch (IOException e) {
+			System.out.println(e.getMessage());
+		}
+
+		if (message != null && message.contains("UserIps:")) {
+			for (String p2PChatUserIp : message.split(":")) {
+				try {
+					connect(p2PChatUserIp);
+				} catch (UnknownHostException e) {
+					System.out.println(e.getMessage());
+				}
+			}
+		} else if (message != null && message.equals("Stop")) {
+			p2PChatUserIps.remove(socket.getInetAddress());
+		}
+
+		if (message != null && !message.isBlank() && !message.isEmpty()) {
+			messages.add(socket.getInetAddress() + ": " + message);
+		}
 	}
 
 	@Override
@@ -46,14 +72,18 @@ public class P2PChat extends Thread implements AutoCloseable {
 		try (ServerSocket server = new ServerSocket(port)) {
 			server.setSoTimeout(10000);
 			while (true) {
-				try {
-					Socket socket = server.accept();
-					P2PChatSocket p2PChatSocket = new P2PChatSocket(socket, this, cancellationTokenSource);
-					sendSocketsToNewSocket(p2PChatSocket);
-					p2PChatSockets.add(p2PChatSocket);
-					messages.add("User:" + socket.getInetAddress() + ": is connected");
+				InetAddress newP2PChatUserIp = null;
+
+				try (Socket socket = server.accept()) {
+					newP2PChatUserIp = socket.getInetAddress();
+					recieve(socket);
 				} catch (IOException e) {
 					System.out.println(e.getMessage());
+				}
+
+				if (newP2PChatUserIp != null && !p2PChatUserIps.contains(newP2PChatUserIp)) {
+					sendUserIpsToNewUserIp(newP2PChatUserIp);
+					p2PChatUserIps.add(newP2PChatUserIp);
 				}
 
 				if (cancellationTokenSource.getCancellationToken()) {
@@ -68,22 +98,39 @@ public class P2PChat extends Thread implements AutoCloseable {
 			System.out.println(e.getMessage());
 		} finally {
 			System.out.println("P2P Chat stop");
-			p2PChatSockets.clear();
+			p2PChatUserIps.clear();
 			messages.clear();
 		}
 	}
 
-	public void send(String message) {
-		messages.add("My message: " + message);
-		for (P2PChatSocket p2PChatSocket : p2PChatSockets) {
-			p2PChatSocket.send(message);
+	private void send(InetAddress p2PChatUserIp, String message) {
+		try (Socket socket = new Socket(p2PChatUserIp, port);
+				PrintWriter out = new PrintWriter(socket.getOutputStream(), true)) {
+			out.println(message);
+			recieve(socket);
+		} catch (IOException e) {
+			System.out.println(e.getMessage());
 		}
 	}
 
-	private void sendSocketsToNewSocket(P2PChatSocket newSocket) {
-		for (P2PChatSocket p2PChatSocket : p2PChatSockets) {
-			newSocket.send("User:" + p2PChatSocket.getSocketInetAddress() + ": is connected");
+	public void sendToAll(String message) {
+		messages.add("My message: " + message);
+		for (InetAddress p2PChatUserIp : p2PChatUserIps) {
+			try (Socket socket = new Socket(p2PChatUserIp, port);
+					PrintWriter out = new PrintWriter(socket.getOutputStream(), true)) {
+				out.println(message);
+			} catch (IOException e) {
+				System.out.println(e.getMessage());
+			}
 		}
+	}
+
+	private void sendUserIpsToNewUserIp(InetAddress newP2PChatUserIp) {
+		String message = "UserIps:";
+		for (InetAddress p2PChatUserIp : p2PChatUserIps) {
+			message += p2PChatUserIp + ":";
+		}
+		send(newP2PChatUserIp, message);
 	}
 
 }

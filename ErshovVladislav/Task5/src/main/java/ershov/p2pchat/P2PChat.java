@@ -42,8 +42,8 @@ public class P2PChat extends Thread implements AutoCloseable {
 	private void recieve(Socket socket) {
 		String message = "";
 		try (BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {
-			while (!in.ready()) {
-			}
+//			while (!in.ready()) {
+//			}
 
 			message = in.readLine();
 		} catch (IOException e) {

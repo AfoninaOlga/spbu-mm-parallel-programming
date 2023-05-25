@@ -1,10 +1,9 @@
 package ershov.p2pchat;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.Socket;
 
@@ -12,10 +11,8 @@ public class P2PChatSocket extends Thread {
 
 	/** Target socket. */
 	private final Socket socket;
-	/** Socket read stream. */
-	private final BufferedReader in;
-	/** Socket write stream. */
-	private final BufferedWriter out;
+	/** Socket writer. */
+	private final PrintWriter out;
 	/** P2P chat. */
 	private final P2PChat p2PChat;
 	private volatile CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
@@ -24,8 +21,7 @@ public class P2PChatSocket extends Thread {
 	public P2PChatSocket(Socket socket, P2PChat p2PChat, CancellationTokenSource cancellationTokenSource)
 			throws IOException {
 		this.socket = socket;
-		this.in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-		this.out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+		this.out = new PrintWriter(socket.getOutputStream(), true);
 		this.p2PChat = p2PChat;
 		this.cancellationTokenSource = cancellationTokenSource;
 
@@ -41,6 +37,7 @@ public class P2PChatSocket extends Thread {
 		String message = "";
 		try {
 			while (true) {
+				BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 				message = in.readLine();
 
 				if (message != null && message.contains("User:")) {
@@ -60,6 +57,8 @@ public class P2PChatSocket extends Thread {
 				if (this.isInterrupted()) {
 					break;
 				}
+
+				in.close();
 			}
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
@@ -67,7 +66,6 @@ public class P2PChatSocket extends Thread {
 			p2PChat.getMessages().add("User " + socket.getInetAddress() + " diconected");
 			System.out.println("P2P Chat Socket with " + socket.getInetAddress() + " stopped");
 			try {
-				in.close();
 				out.close();
 				socket.close();
 			} catch (IOException e) {
@@ -81,12 +79,7 @@ public class P2PChatSocket extends Thread {
 			return;
 		}
 
-		try {
-			out.write(message + "\n");
-			out.flush();
-		} catch (IOException e) {
-			System.out.println(e.getMessage());
-		}
+		out.println(message);
 
 		if (message.equals("Stop")) {
 			isStopped = true;

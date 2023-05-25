@@ -76,6 +76,7 @@ public class Main extends Application {
 			public void handle(ActionEvent event) {
 				chat.send(message);
 				sendTextField.setText("");
+				refreshChat();
 			}
 
 		});
@@ -87,11 +88,7 @@ public class Main extends Application {
 
 			@Override
 			public void handle(ActionEvent event) {
-				String text = "";
-				for (String message : chat.getMessages()) {
-					text += message + "\n";
-				}
-				chatAreaText.setText(text);
+				refreshChat();
 			}
 
 		});
@@ -117,6 +114,7 @@ public class Main extends Application {
 				try {
 					chat.connectToSocket(ip);
 					errorMessageText.setText("");
+					refreshChat();
 				} catch (IOException e) {
 					errorMessageText.setText(e.getMessage());
 					System.out.println(e.getMessage());
@@ -131,6 +129,14 @@ public class Main extends Application {
 	public void init() throws Exception {
 		super.init();
 		System.out.println("P2P Chat Application start");
+	}
+
+	private void refreshChat() {
+		String text = "";
+		for (String message : chat.getMessages()) {
+			text += message + "\n";
+		}
+		chatAreaText.setText(text);
 	}
 
 	@Override

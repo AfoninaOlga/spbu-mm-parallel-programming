@@ -38,7 +38,7 @@ mvn exec:java -Dexec.mainClass="ershov.Main"
 
 #### Работа с чатом
 
-![image-20230525151304519](C:\Users\ershov.e\AppData\Roaming\Typora\typora-user-images\image-20230525151304519.png)
+![image-20230525151304519](https://github.com/Stanislav-Sartasov/spbu-mm-parallel-programming/blob/ErshovVladislav/ErshovVladislav/Task5/application.PNG)
 
 - Чтобы подключиться к другому пользователю, нужно ввести его ip и нажать кнопку `Connect`
 - Чтобы отправить сообщение в чат его надо ввести и нажать кнопку `Send`

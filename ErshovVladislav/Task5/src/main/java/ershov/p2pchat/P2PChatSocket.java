@@ -37,7 +37,7 @@ public class P2PChatSocket extends Thread {
 		String message = "";
 		try (BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {
 			while (true) {
-				//message = in.readLine();
+				message = in.readLine();
 
 				if (message != null && message.contains("User:")) {
 					p2PChat.connectToSocket(message.split(":")[1]);

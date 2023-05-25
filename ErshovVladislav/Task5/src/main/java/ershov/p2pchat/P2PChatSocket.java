@@ -57,7 +57,7 @@ public class P2PChatSocket extends Thread implements AutoCloseable {
 
                 p2PChat.getMessages().add(message);
 
-                if (this.isInterrupted()) {
+                if (thread.isInterrupted()) {
             		break;
             	}
             }

@@ -10,8 +10,6 @@ public class P2PChat extends Thread implements AutoCloseable {
 
 	/** Port for server and client sockets. */
 	private final int port;
-	/** This thread. */
-	private final Thread thread;
 	/** List for p2p chat sockets. */
 	private final List<P2PChatSocket> p2PChatSockets = Collections.synchronizedList(new ArrayList<>());
 	/** List for all messages. */
@@ -20,9 +18,8 @@ public class P2PChat extends Thread implements AutoCloseable {
 
 	public P2PChat(int port) {
 		this.port = port;
-		this.thread = new Thread(this);
 
-		thread.start();
+		start();
 	}
 
 	@Override
@@ -60,8 +57,8 @@ public class P2PChat extends Thread implements AutoCloseable {
 				}
 
 				if (cancellationTokenSource.getCancellationToken()) {
-                    this.interrupt();
-                }
+					this.interrupt();
+				}
 
 				if (this.isInterrupted()) {
 					break;
@@ -88,5 +85,5 @@ public class P2PChat extends Thread implements AutoCloseable {
 			newSocket.send("Socket:" + p2PChatSocket.getSocketInetAddress());
 		}
 	}
-	
+
 }

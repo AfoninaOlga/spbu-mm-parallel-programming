@@ -53,6 +53,7 @@ public class P2PChat extends Thread implements AutoCloseable {
 					P2PChatSocket p2PChatSocket = new P2PChatSocket(socket, this, cancellationTokenSource);
 					sendSocketsToNewSocket(p2PChatSocket);
 					p2PChatSockets.add(p2PChatSocket);
+					messages.add("User " + socket.getInetAddress() + " is connected");
 				} catch (IOException e) {
 					System.out.println(e.getMessage());
 				}

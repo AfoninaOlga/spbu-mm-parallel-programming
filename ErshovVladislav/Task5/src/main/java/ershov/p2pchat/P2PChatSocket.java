@@ -65,6 +65,7 @@ public class P2PChatSocket extends Thread {
         } catch (Exception e) {
 			System.out.println(e.getMessage());
         } finally {
+        	p2PChat.getMessages().add("User " + socket.getInetAddress() + " diconected");
         	System.out.println("P2P Chat Socket stop");
         	try {
 	        	in.close();

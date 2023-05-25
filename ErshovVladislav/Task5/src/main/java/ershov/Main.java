@@ -130,14 +130,14 @@ public class Main extends Application {
 	@Override
 	public void init() throws Exception {
 		super.init();
-		System.out.println("P2P Chat Application init");
+		System.out.println("P2P Chat Application start");
 	}
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		chat = new P2PChat(PORT);
 
-		primaryStage.setTitle("P2P Chat Application start");
+		primaryStage.setTitle("P2P Chat Application");
 
 		GridPane grid = new GridPane();
 		grid.setAlignment(Pos.TOP_CENTER);

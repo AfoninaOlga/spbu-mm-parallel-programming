@@ -43,15 +43,15 @@ public class P2PChatSocket extends Thread {
 			while (true) {
 				message = in.readLine();
 
-				if (message == null || message.equals("")) {
-					continue;
-				} else if (message.contains("Socket:")) {
+				if (message.contains("Socket:")) {
 					p2PChat.connectToSocket(message.split(":")[1]);
 				} else if (message.equals("Stop")) {
 					this.interrupt();
 				}
 
-				p2PChat.getMessages().add("Message from " + socket.getInetAddress() + ": " + message);
+				if (message != null && !message.equals("")) {
+					p2PChat.getMessages().add("Message from " + socket.getInetAddress() + ": " + message);
+				}
 
 				if (cancellationTokenSource.getCancellationToken() || isStopped) {
 					this.interrupt();
@@ -65,7 +65,7 @@ public class P2PChatSocket extends Thread {
 			System.out.println(e.getMessage());
 		} finally {
 			p2PChat.getMessages().add("User " + socket.getInetAddress() + " diconected");
-			System.out.println("P2P Chat Socket stop");
+			System.out.println("P2P Chat Socket with " + socket.getInetAddress() + " stopped");
 			try {
 				in.close();
 				out.close();

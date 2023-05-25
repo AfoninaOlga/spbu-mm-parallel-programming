@@ -36,3 +36,11 @@ mvn clean package
 mvn exec:java -Dexec.mainClass="ershov.Main"
 ```
 
+#### Работа с чатом
+
+![image-20230525151304519](C:\Users\ershov.e\AppData\Roaming\Typora\typora-user-images\image-20230525151304519.png)
+
+- Чтобы подключиться к другому пользователю, нужно ввести его ip и нажать кнопку `Connect`
+- Чтобы отправить сообщение в чат его надо ввести и нажать кнопку `Send`
+- Чтобы обновить список сообщений надо нажать кнопку `Refresh chat`
+- Чтобы выйти из чата нужно закрыть приложение

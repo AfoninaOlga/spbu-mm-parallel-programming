@@ -32,9 +32,9 @@ public class P2PChat extends Thread implements AutoCloseable {
 	}
 
 	private void connect(InetAddress newP2PChatUserIp) {
+		sendUserIpsToNewUserIp(newP2PChatUserIp);
 		p2PChatUserIps.add(newP2PChatUserIp);
 		messages.add("Connect to " + newP2PChatUserIp);
-		sendUserIpsToNewUserIp(newP2PChatUserIp);
 	}
 
 	public List<String> getMessages() {
@@ -51,9 +51,14 @@ public class P2PChat extends Thread implements AutoCloseable {
 
 		if (message != null && message.contains("UserIps:")) {
 			for (String p2PChatUserIp : message.split(":")) {
+				if (p2PChatUserIp.equals("UserIps")) {
+					continue;
+				}
+
 				try {
 					connect(p2PChatUserIp);
 				} catch (UnknownHostException e) {
+					messages.add("Not connect to " + p2PChatUserIp);
 					System.out.println(e.getMessage());
 				}
 			}
@@ -116,6 +121,10 @@ public class P2PChat extends Thread implements AutoCloseable {
 		messages.add("Send to all: " + message);
 		for (InetAddress p2PChatUserIp : p2PChatUserIps) {
 			send(p2PChatUserIp, message);
+		}
+
+		if (message.equals("Stop")) {
+			cancellationTokenSource.setCancelToken();
 		}
 	}
 

@@ -31,14 +31,6 @@ mvn -v
 netstat -ano
 ```
 
-
-
-- Псоле запуска приложения убедиться, что порт 8093 открыт (если `telnet` не работает - включить по инструкции https://help.keenetic.com/hc/ru/articles/213965809-%D0%92%D0%BA%D0%BB%D1%8E%D1%87%D0%B5%D0%BD%D0%B8%D0%B5-%D1%81%D0%BB%D1%83%D0%B6%D0%B1-Telnet-%D0%B8-TFTP-%D0%B2-Windows)
-
-```
-telnet localhost 8093
-```
-
 #### Сборка
 
 - Из корневой папки
@@ -52,6 +44,12 @@ mvn clean package
 
 ```
 mvn exec:java -Dexec.mainClass="ershov.Main"
+```
+
+- Псоле запуска приложения убедиться, что порт 8093 открыт (если `telnet` не работает - включить по инструкции https://help.keenetic.com/hc/ru/articles/213965809-%D0%92%D0%BA%D0%BB%D1%8E%D1%87%D0%B5%D0%BD%D0%B8%D0%B5-%D1%81%D0%BB%D1%83%D0%B6%D0%B1-Telnet-%D0%B8-TFTP-%D0%B2-Windows)
+
+```
+telnet localhost 8093
 ```
 
 #### Работа с чатом

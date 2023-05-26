@@ -24,7 +24,6 @@ public class Chat : IDisposable
 
     private readonly IList<MemberInfo> _members;
 
-    // private readonly IList<ChatMessage> _chatMessages;
     private readonly IList<string> _chatMessages;
 
     public MemberInfo Me { get; }
@@ -42,29 +41,20 @@ public class Chat : IDisposable
         {
             case AddMemberMessage addMemberMessage:
                 ProcessAddMemberMessage(addMemberMessage);
-                Console.WriteLine(
-                    $"Process AddMemberMessage [{addMemberMessage.Member.Username}, {addMemberMessage.Member.Ip}, {addMemberMessage.Member.Port}]");
                 break;
             case UserMessage userMessage:
                 ProcessUserMessage(userMessage);
-                Console.WriteLine($"Process UserMessage [{userMessage.Username}, {userMessage.Text}]");
                 break;
             case ConnectMessage connectMessage:
                 ProcessConnectMessage(connectMessage);
-                Console.WriteLine(
-                    $"Process ConnectMessage [{connectMessage.NewMember.Username}, {connectMessage.NewMember.Ip}, {connectMessage.NewMember.Port}]");
                 break;
             case DisconnectMessage disconnectMessage:
                 ProcessDisconnectMessage(disconnectMessage);
-                Console.WriteLine(
-                    $"Process DisconnectMessage [{disconnectMessage.DisconnectedMember.Username}, {disconnectMessage.DisconnectedMember.Ip}, {disconnectMessage.DisconnectedMember.Port}]");
                 break;
             case MembersMessage membersMessage:
                 ProcessMembersMessage(membersMessage);
-                Console.WriteLine($"Process MembersMessage [{membersMessage.Members.Length}]");
                 break;
             case EchoMessage echo:
-                Console.WriteLine($"Process Echo");
                 break;
             default:
                 throw new ArgumentOutOfRangeException(nameof(message));

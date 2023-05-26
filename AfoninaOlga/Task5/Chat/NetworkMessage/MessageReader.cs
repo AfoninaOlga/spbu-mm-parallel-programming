@@ -14,7 +14,6 @@ public class MessageReader
     public Message ReadMessage()
     {
         var messageType = ReadBytes(1);
-        Console.WriteLine($"First byte: {messageType[0]}");
         return (Message.MessageType)messageType[0] switch
         {
             Message.MessageType.Connect => new ConnectMessage( ReadMemberInfo()),

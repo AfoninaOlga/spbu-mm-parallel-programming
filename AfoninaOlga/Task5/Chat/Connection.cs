@@ -27,14 +27,12 @@ public class Connection : IDisposable
     private readonly Socket _listener;
     private Thread? _listenerThread;
 
-    // private readonly Dictionary<IPEndPoint, Socket> _connectedClients = new();
     private readonly HashSet<IPEndPoint> _connectedClients = new();
 
     private Connection(IPEndPoint ipEndPoint)
     {
         _listener = new Socket(ipEndPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
         _listener.Bind(ipEndPoint);
-        Console.WriteLine(_listener.LocalEndPoint);
         LocalEndPoint = (IPEndPoint)_listener.LocalEndPoint;
         _listener.Listen();
     }

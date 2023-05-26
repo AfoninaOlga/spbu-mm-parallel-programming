@@ -21,17 +21,17 @@ public class ConnectToChatScreenViewModel : ReactiveObject, IRoutableViewModel
             .WhenAnyValue(x => x.CanNavigateChat);
         GoChat = ReactiveCommand.CreateFromObservable(() =>
         {
-            try
-            {
-                var connection = Connection.ConnectTo(IPEndPoint.Parse(EndPoint));
-                return HostScreen.Router.Navigate.Execute(new ChatScreenViewModel(HostScreen, connection, Username));
-            }
-            catch (Exception e)
-            {
-                // TODO: Show "Cannot connect"
-                throw;
-            }
+            var connection = Connection.ConnectTo(IPEndPoint.Parse(EndPoint));
+            return HostScreen.Router.Navigate.Execute(new ChatScreenViewModel(HostScreen, connection, Username));
         }, canConnectChat);
+
+        GoChat.ThrownExceptions.Subscribe(error =>
+        {
+            MessageBox.Avalonia.MessageBoxManager
+                .GetMessageBoxStandardWindow("Не удаётся подключится",
+                    $"Не удаётся подключится к чату по адресу {EndPoint}. Проверьте правильность адреса.").Show();
+        });
+
 
         var canGoBack = this
             .WhenAnyValue(x => x.HostScreen.Router.NavigationStack.Count)

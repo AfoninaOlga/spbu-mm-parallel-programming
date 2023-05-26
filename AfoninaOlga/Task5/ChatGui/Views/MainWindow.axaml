@@ -17,7 +17,7 @@
     
     <reactiveUi:RoutedViewHost Router="{Binding Router}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
         <reactiveUi:RoutedViewHost.DefaultContent>
-            <StackPanel Margin="0">
+            <StackPanel>
                 <!-- <TextBlock Text="{Binding Title}" /> -->
                 <TextBlock Classes="h1" Text="Добро пожаловать в P2P Чат" />
                 <Grid ColumnDefinitions="Auto,Auto">

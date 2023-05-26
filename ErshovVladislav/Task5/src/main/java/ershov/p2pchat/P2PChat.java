@@ -68,6 +68,8 @@ public class P2PChat extends Thread implements AutoCloseable {
 			}
 		} else if (message != null && message.equals("Stop")) {
 			p2PChatUserIps.remove(socket.getInetAddress());
+		} else if (message != null) {
+			connect(socket.getInetAddress());
 		}
 
 		if (message != null && !message.isEmpty()) {
@@ -80,16 +82,12 @@ public class P2PChat extends Thread implements AutoCloseable {
 		try (ServerSocket server = new ServerSocket(port)) {
 			server.setSoTimeout(2000);
 			while (true) {
-				InetAddress newP2PChatUserIp = null;
-
 				try (Socket socket = server.accept()) {
-					newP2PChatUserIp = socket.getInetAddress();
+					socket.getInetAddress();
 					recieve(socket);
 				} catch (IOException e) {
 					System.out.println(e.getMessage());
 				}
-
-				connect(newP2PChatUserIp);
 
 				if (cancellationTokenSource.getCancellationToken()) {
 					this.interrupt();

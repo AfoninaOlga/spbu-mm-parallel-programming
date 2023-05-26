@@ -73,7 +73,7 @@ public class Main extends Application {
 
 			@Override
 			public void handle(ActionEvent event) {
-				if (message.isEmpty()) {
+				if (!message.isEmpty()) {
 					chat.sendToAll(message);
 				}
 				sendTextField.setText("");

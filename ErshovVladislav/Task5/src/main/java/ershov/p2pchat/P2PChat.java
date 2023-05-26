@@ -3,7 +3,9 @@ package ershov.p2pchat;
 import java.net.*;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.io.*;
 
 public class P2PChat extends Thread implements AutoCloseable {
@@ -11,7 +13,7 @@ public class P2PChat extends Thread implements AutoCloseable {
 	/** Port for server and client sockets. */
 	private final int port;
 	/** List for p2p chat users ips. */
-	private final List<InetAddress> p2PChatUserIps = Collections.synchronizedList(new ArrayList<>());
+	private final Set<InetAddress> p2PChatUserIps = Collections.synchronizedSet(new HashSet<>());
 	/** List for all messages. */
 	private final List<String> messages = Collections.synchronizedList(new ArrayList<>());
 	private volatile CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
@@ -28,13 +30,15 @@ public class P2PChat extends Thread implements AutoCloseable {
 	}
 
 	public void connect(String newP2PChatUserIp) throws UnknownHostException {
-		connect(InetAddress.getByName(newP2PChatUserIp.replace("/", "")));
+		connect(InetAddress.getByName(newP2PChatUserIp));
 	}
 
 	private void connect(InetAddress newP2PChatUserIp) {
-		sendUserIpsToNewUserIp(newP2PChatUserIp);
-		p2PChatUserIps.add(newP2PChatUserIp);
-		messages.add("Connect to " + newP2PChatUserIp);
+		if (newP2PChatUserIp != null && !p2PChatUserIps.contains(newP2PChatUserIp)) {
+			sendUserIpsToNewUserIp(newP2PChatUserIp);
+			p2PChatUserIps.add(newP2PChatUserIp);
+			messages.add("Connect to " + newP2PChatUserIp);
+		}
 	}
 
 	public List<String> getMessages() {
@@ -85,10 +89,7 @@ public class P2PChat extends Thread implements AutoCloseable {
 					System.out.println(e.getMessage());
 				}
 
-				if (newP2PChatUserIp != null && !p2PChatUserIps.contains(newP2PChatUserIp)) {
-					sendUserIpsToNewUserIp(newP2PChatUserIp);
-					p2PChatUserIps.add(newP2PChatUserIp);
-				}
+				connect(newP2PChatUserIp);
 
 				if (cancellationTokenSource.getCancellationToken()) {
 					this.interrupt();

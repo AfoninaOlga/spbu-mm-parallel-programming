@@ -67,7 +67,7 @@ public class P2PChat extends Thread implements AutoCloseable {
 		}
 
 		if (message != null && !message.isBlank() && !message.isEmpty()) {
-			messages.add("From" + socket.getInetAddress() + ": " + message);
+			messages.add("From " + socket.getInetAddress() + ": " + message);
 		}
 	}
 
@@ -112,7 +112,7 @@ public class P2PChat extends Thread implements AutoCloseable {
 				PrintWriter out = new PrintWriter(socket.getOutputStream(), true)) {
 			out.println(message);
 		} catch (IOException e) {
-			messages.add("Message not sent to " + p2PChatUserIp);
+			messages.add("\"" + message + "\"" + p2PChatUserIp);
 			System.out.println(e.getMessage());
 		}
 	}

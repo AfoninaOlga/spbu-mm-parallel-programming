@@ -25,8 +25,8 @@ public class P2PChat extends Thread implements AutoCloseable {
 
 	@Override
 	public void close() throws Exception {
-		cancellationTokenSource.setCancelToken();
 		sendToAll("Stop");
+		cancellationTokenSource.setCancelToken();
 	}
 
 	public void connect(String newP2PChatUserIp) throws UnknownHostException {

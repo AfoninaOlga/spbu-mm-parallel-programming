@@ -73,7 +73,9 @@ public class Main extends Application {
 
 			@Override
 			public void handle(ActionEvent event) {
-				chat.sendToAll(message);
+				if (message.isEmpty()) {
+					chat.sendToAll(message);
+				}
 				sendTextField.setText("");
 				refreshChat();
 			}

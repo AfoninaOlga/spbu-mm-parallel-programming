@@ -42,9 +42,6 @@ public class P2PChat extends Thread implements AutoCloseable {
 	private void recieve(Socket socket) {
 		String message = "";
 		try (BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {
-//			while (!in.ready()) {
-//			}
-
 			message = in.readLine();
 		} catch (IOException e) {
 			System.out.println(e.getMessage());
@@ -107,7 +104,6 @@ public class P2PChat extends Thread implements AutoCloseable {
 		try (Socket socket = new Socket(p2PChatUserIp, port);
 				PrintWriter out = new PrintWriter(socket.getOutputStream(), true)) {
 			out.println(message);
-			recieve(socket);
 		} catch (IOException e) {
 			System.out.println(e.getMessage());
 		}
@@ -116,12 +112,7 @@ public class P2PChat extends Thread implements AutoCloseable {
 	public void sendToAll(String message) {
 		messages.add("My message: " + message);
 		for (InetAddress p2PChatUserIp : p2PChatUserIps) {
-			try (Socket socket = new Socket(p2PChatUserIp, port);
-					PrintWriter out = new PrintWriter(socket.getOutputStream(), true)) {
-				out.println(message);
-			} catch (IOException e) {
-				System.out.println(e.getMessage());
-			}
+			send(p2PChatUserIp, message);
 		}
 	}
 

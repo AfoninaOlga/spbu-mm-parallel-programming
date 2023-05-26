@@ -32,6 +32,8 @@ public class P2PChat extends Thread implements AutoCloseable {
 	}
 
 	private void connect(InetAddress newP2PChatUserIp) {
+		p2PChatUserIps.add(newP2PChatUserIp);
+		messages.add("Connect to " + newP2PChatUserIp);
 		sendUserIpsToNewUserIp(newP2PChatUserIp);
 	}
 
@@ -105,12 +107,13 @@ public class P2PChat extends Thread implements AutoCloseable {
 				PrintWriter out = new PrintWriter(socket.getOutputStream(), true)) {
 			out.println(message);
 		} catch (IOException e) {
+			messages.add("Message not sent to " + p2PChatUserIp);
 			System.out.println(e.getMessage());
 		}
 	}
 
 	public void sendToAll(String message) {
-		messages.add("My message: " + message);
+		messages.add("Send to all: " + message);
 		for (InetAddress p2PChatUserIp : p2PChatUserIps) {
 			send(p2PChatUserIp, message);
 		}

@@ -1,0 +1,44 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:dd="using:ChatGui.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="ChatGui.Views.NewChatScreen">
+    <Design.DataContext>
+        <dd:NewChatScreenViewModel />
+    </Design.DataContext>
+
+    <StackPanel>
+        <TextBlock Classes="h1" Text="Создание нового P2P чата" />
+        <Border Background="#90A4AE"
+                BorderThickness="2"
+                CornerRadius="3"
+                Padding="4">
+            <Grid Margin="0, 5, 0, 0" RowDefinitions="*" ColumnDefinitions="*,*,*">
+                <TextBlock Classes="h2" Grid.Row="0" Grid.Column="0" Text="Интерфейс" />
+                <TextBlock Classes="h2" Grid.Row="0" Grid.Column="1" Text="Тип" />
+                <TextBlock Classes="h2" Grid.Row="0" Grid.Column="2" Text="Адрес" />
+            </Grid>
+        </Border>
+        <ListBox Items="{Binding NetworkInterfaces}"
+                 SelectionMode="Single,AlwaysSelected"
+                 SelectedItem="{Binding SelectedInterface}">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <Grid RowDefinitions="*" ColumnDefinitions="*,*,*">
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding Name}" />
+                        <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding Type}" />
+                        <TextBlock Grid.Row="0" Grid.Column="2" Text="{Binding Address}" />
+                    </Grid>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+        <TextBox Text="{Binding Username }"
+                 Watermark="Имя пользователя"/>
+        <Grid ColumnDefinitions="Auto,Auto">
+                <Button Grid.Row="0" Grid.Column="0" Command="{Binding GoChat}">Создать чат</Button>
+                <Button Grid.Row="0" Grid.Column="1" Command="{Binding GoBack}">Назад</Button>
+        </Grid>
+    </StackPanel>
+</UserControl>

@@ -60,7 +60,7 @@ public class P2PChat extends Thread implements AutoCloseable {
 				}
 
 				try {
-					connect(p2PChatUserIp);
+					connect(p2PChatUserIp.replace("/", ""));
 				} catch (UnknownHostException e) {
 					messages.add("Not connect to " + p2PChatUserIp);
 					System.out.println(e.getMessage());
@@ -78,7 +78,7 @@ public class P2PChat extends Thread implements AutoCloseable {
 	@Override
 	public void run() {
 		try (ServerSocket server = new ServerSocket(port)) {
-			server.setSoTimeout(10000);
+			server.setSoTimeout(2000);
 			while (true) {
 				InetAddress newP2PChatUserIp = null;
 

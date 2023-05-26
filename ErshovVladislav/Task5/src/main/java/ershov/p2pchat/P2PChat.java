@@ -70,7 +70,7 @@ public class P2PChat extends Thread implements AutoCloseable {
 			p2PChatUserIps.remove(socket.getInetAddress());
 		}
 
-		if (message != null && !message.isBlank() && !message.isEmpty()) {
+		if (message != null && !message.isEmpty()) {
 			messages.add("From " + socket.getInetAddress() + ": " + message);
 		}
 	}
@@ -119,7 +119,7 @@ public class P2PChat extends Thread implements AutoCloseable {
 	}
 
 	public void sendToAll(String message) {
-		messages.add("Send to all: " + message);
+		messages.add("My message: " + message);
 		for (InetAddress p2PChatUserIp : p2PChatUserIps) {
 			send(p2PChatUserIp, message);
 		}

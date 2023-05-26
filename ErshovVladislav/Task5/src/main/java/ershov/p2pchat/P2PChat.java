@@ -66,6 +66,8 @@ public class P2PChat extends Thread implements AutoCloseable {
 					System.out.println(e.getMessage());
 				}
 			}
+
+			connect(socket.getInetAddress());
 		} else if (message != null && message.equals("Stop")) {
 			p2PChatUserIps.remove(socket.getInetAddress());
 		} else if (message != null) {

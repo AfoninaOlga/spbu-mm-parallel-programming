@@ -23,12 +23,12 @@ public class P2PChat extends Thread implements AutoCloseable {
 
 	@Override
 	public void close() throws Exception {
-		sendToAll("Stop");
 		cancellationTokenSource.setCancelToken();
+		sendToAll("Stop");
 	}
 
 	public void connect(String newP2PChatUserIp) throws UnknownHostException {
-		connect(InetAddress.getByName(newP2PChatUserIp));
+		connect(InetAddress.getByName(newP2PChatUserIp.replace("/", "")));
 	}
 
 	private void connect(InetAddress newP2PChatUserIp) {
@@ -112,7 +112,7 @@ public class P2PChat extends Thread implements AutoCloseable {
 				PrintWriter out = new PrintWriter(socket.getOutputStream(), true)) {
 			out.println(message);
 		} catch (IOException e) {
-			messages.add("\"" + message + "\"" + p2PChatUserIp);
+			messages.add("\"" + message + "\" not send to " + p2PChatUserIp);
 			System.out.println(e.getMessage());
 		}
 	}

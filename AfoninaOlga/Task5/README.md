@@ -25,7 +25,7 @@ User can choose whether to create a new chat or join an existing one.
 ![ScreenExamples/WelcomeScreen.png](ScreenExamples/WelcomeScreen.png)
 ### Chat creating window
 User can choose available network interface and enter `Username`.
-![Chat creating window](ScreenExamples/ChatCreationScreen.png)
+![Chat creating window](ScreenExamples/ChatCreationScreen.png)\
 _**Created chat:**_
 ![Created chat](ScreenExamples/NewChatScreen.png)
 ### Connect to existing chat window

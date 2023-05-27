@@ -18,4 +18,22 @@ public class AddMemberMessage : Message
         ms.Write(Member.ToBytes());
         return ms.ToArray();
     }
+
+    protected bool Equals(AddMemberMessage other)
+    {
+        return Member.Equals(other.Member);
+    }
+
+    public override bool Equals(object? obj)
+    {
+        if (ReferenceEquals(null, obj)) return false;
+        if (ReferenceEquals(this, obj)) return true;
+        if (obj.GetType() != this.GetType()) return false;
+        return Equals((AddMemberMessage)obj);
+    }
+
+    public override int GetHashCode()
+    {
+        return Member.GetHashCode();
+    }
 }

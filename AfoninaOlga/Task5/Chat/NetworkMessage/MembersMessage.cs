@@ -22,4 +22,22 @@ public class MembersMessage : Message
         }
         return ms.ToArray();
     }
+
+    protected bool Equals(MembersMessage other)
+    {
+        return Members.Equals(other.Members);
+    }
+
+    public override bool Equals(object? obj)
+    {
+        if (ReferenceEquals(null, obj)) return false;
+        if (ReferenceEquals(this, obj)) return true;
+        if (obj.GetType() != this.GetType()) return false;
+        return Equals((MembersMessage)obj);
+    }
+
+    public override int GetHashCode()
+    {
+        return Members.GetHashCode();
+    }
 }

@@ -2,6 +2,24 @@ namespace Chat.NetworkMessage;
 
 public class DisconnectMessage : Message
 {
+    protected bool Equals(DisconnectMessage other)
+    {
+        return DisconnectedMember.Equals(other.DisconnectedMember);
+    }
+
+    public override bool Equals(object? obj)
+    {
+        if (ReferenceEquals(null, obj)) return false;
+        if (ReferenceEquals(this, obj)) return true;
+        if (obj.GetType() != this.GetType()) return false;
+        return Equals((DisconnectMessage)obj);
+    }
+
+    public override int GetHashCode()
+    {
+        return DisconnectedMember.GetHashCode();
+    }
+
     private static readonly byte[] Type = { (byte)MessageType.Disconnect };
     
     public DisconnectMessage(MemberInfo disconnectedMember)

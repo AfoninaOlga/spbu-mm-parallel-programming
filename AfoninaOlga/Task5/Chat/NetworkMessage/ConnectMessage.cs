@@ -2,6 +2,24 @@ namespace Chat.NetworkMessage;
 
 public class ConnectMessage : Message
 {
+    protected bool Equals(ConnectMessage other)
+    {
+        return NewMember.Equals(other.NewMember);
+    }
+
+    public override bool Equals(object? obj)
+    {
+        if (ReferenceEquals(null, obj)) return false;
+        if (ReferenceEquals(this, obj)) return true;
+        if (obj.GetType() != this.GetType()) return false;
+        return Equals((ConnectMessage)obj);
+    }
+
+    public override int GetHashCode()
+    {
+        return NewMember.GetHashCode();
+    }
+
     private static readonly byte[] Type = { (byte)MessageType.Connect };
     public ConnectMessage(MemberInfo newMember)
     {

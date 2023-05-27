@@ -17,7 +17,12 @@ dotnet build
 ### Run project
 
 ```sh
-docker run --project ChatGui
+dotnet run --project ChatGui
+```
+### Run tests
+
+```sh
+dotnet test
 ```
 ## GUI
 ### Welcome window

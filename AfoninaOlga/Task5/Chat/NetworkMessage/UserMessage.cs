@@ -23,4 +23,22 @@ public class UserMessage : Message
         ms.Write(System.Text.Encoding.UTF8.GetBytes(Username));
         return ms.ToArray();
     }
+
+    public override bool Equals(object? obj)
+    {
+        if (ReferenceEquals(null, obj)) return false;
+        if (ReferenceEquals(this, obj)) return true;
+        if (obj.GetType() != this.GetType()) return false;
+        return Equals((UserMessage)obj);
+    }
+
+    protected bool Equals(UserMessage other)
+    {
+        return Text == other.Text && Username == other.Username;
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(Text, Username);
+    }
 }

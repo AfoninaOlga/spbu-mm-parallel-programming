@@ -25,7 +25,7 @@
             <TextBox 
                 x:Name="ipAddress"
                 Grid.Column="1" 
-                Text="{Binding Path=Host, TargetNullValue='127.0.0.1', UpdateSourceTrigger=PropertyChanged}"    
+                Text="{Binding Path=Host, TargetNullValue='127.0.0.1', Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"    
                 Background="#e6f2ff"
                 Height="20" Margin="282,0,68,15" Grid.ColumnSpan="2"/>
             <TextBlock 
@@ -34,7 +34,7 @@
                 HorizontalAlignment="Left" Width="235" Grid.ColumnSpan="2" Margin="248,27,0,0" Grid.Column="1" Grid.RowSpan="2"/>
             <TextBox 
                 x:Name="port" 
-                Text="{Binding Path=Port, TargetNullValue='8000', UpdateSourceTrigger=PropertyChanged}"
+                Text="{Binding Path=Port, TargetNullValue='8001', Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                 Background="#e6f2ff" 
                 Margin="283,25,68,25"
                 Height="20" Grid.Column="1" Grid.ColumnSpan="2" Grid.RowSpan="2"/>

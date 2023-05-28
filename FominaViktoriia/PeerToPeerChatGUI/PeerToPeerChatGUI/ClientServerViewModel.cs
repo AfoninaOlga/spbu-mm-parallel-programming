@@ -4,7 +4,7 @@ using System.ComponentModel;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
-
+using System.Windows;
 using PeerToPeerChat;
 
 namespace PeerToPeerChatGUI
@@ -31,16 +31,24 @@ namespace PeerToPeerChatGUI
 
         internal async Task ConnectAsync()
         {
-            var ipIsParsed = IPAddress.TryParse(Host, out var ipAddress);
-
-            if (!ipIsParsed)
+            try
             {
-                ThrowError(this, $"IP address [{ipAddress}] cannot be parsed");
+                var ipIsParsed = IPAddress.TryParse(Host, out var ipAddress);
+
+                if (!ipIsParsed)
+                {
+                    ThrowError(this, $"IP address [{ipAddress}] cannot be parsed");
+                }
+
+                var ipEndPoint = new IPEndPoint(ipAddress!, Port);
+
+                await _clientServer.ConnectAsync(ipEndPoint!);
+                MessageBox.Show($"Connected to {ipEndPoint}");
             }
-
-            var ipEndPoint = new IPEndPoint(ipAddress!, Port);
-
-            await _clientServer.ConnectAsync(ipEndPoint!);
+            catch (Exception e)
+            {
+                ThrowError(this, e.Message);
+            }
         }
 
         internal async Task SendAsync()

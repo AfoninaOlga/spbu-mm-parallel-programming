@@ -13,6 +13,7 @@ namespace PeerToPeerChatGUI
         {
             _viewModel = new ClientServerViewModel();
             _viewModel.ThrowError += (sender, message) => ShowMessage(message);
+            _viewModel.ReceiveAsync();
 
             DataContext = _viewModel;
             InitializeComponent();

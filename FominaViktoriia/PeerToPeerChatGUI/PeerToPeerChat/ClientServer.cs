@@ -19,7 +19,7 @@ namespace PeerToPeerChat
         {
             _socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             _socket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
-            var endPoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 8001);
+            var endPoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 8000);
             _socket.Bind(endPoint);
 
             _cancellationTokenSource = new();

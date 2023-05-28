@@ -1,0 +1,26 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:dd="using:ChatGui.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="ChatGui.Views.ConnectToChatScreen">
+    <Design.DataContext>
+        <dd:ConnectToChatScreenViewModel />
+    </Design.DataContext>
+    <StackPanel>
+        <TextBlock Classes="h1" Text="Подключение к существующему P2P чату" />
+
+        <StackPanel Margin="0, 5, 0, 0" Orientation="Horizontal">
+            <TextBox Text="{Binding EndPoint }"
+                     Watermark="IP:Port"/>
+            <TextBox Text="{Binding Username }"
+                     Watermark="Имя пользователя"/>
+        </StackPanel>
+        
+        <Grid ColumnDefinitions="Auto,Auto">
+            <Button Grid.Row="0" Grid.Column="0" Command="{Binding GoChat}">Подключиться</Button>
+            <Button Grid.Row="0" Grid.Column="1" Command="{Binding GoBack}">Назад</Button>
+        </Grid>
+    </StackPanel>
+</UserControl>

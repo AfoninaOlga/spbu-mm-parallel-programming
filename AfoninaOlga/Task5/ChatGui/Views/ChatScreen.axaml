@@ -1,0 +1,60 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:dd="using:ChatGui.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="ChatGui.Views.ChatScreen">
+    <Design.DataContext>
+        <dd:ChatScreenViewModel />
+    </Design.DataContext>
+    <DockPanel>
+        <Grid Background="#B0BEC5" ColumnDefinitions="*,Auto" DockPanel.Dock="Top">
+            <TextBlock Margin="10, 10, 0, 0" Grid.Row="0" Grid.Column="0" FontStyle="Italic" Text="{Binding MeInfo}" HorizontalAlignment="Left" />
+            <Button Margin="0, 0, 0, 0" Grid.Row="0" Grid.Column="1" Command="{Binding GoBack}" HorizontalAlignment="Right">Выйти</Button>
+        </Grid>
+
+        <Grid ColumnDefinitions="*,Auto" DockPanel.Dock="Bottom">
+            <TextBox Grid.Column="0"
+                     HorizontalAlignment="Stretch"
+                     MaxHeight="150"
+                     AcceptsReturn="True"
+                     Text="{Binding MessageToSend}"/>
+            <Button Grid.Column="1" VerticalAlignment="Bottom" HorizontalAlignment="Right" Command="{Binding OnSendClick}">Отправить</Button>
+        </Grid>
+
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="300" MaxWidth="600" />
+                <ColumnDefinition Width="3" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <ScrollViewer Grid.Column="0" VerticalScrollBarVisibility="Auto" MaxWidth="600">
+                <StackPanel HorizontalAlignment="Stretch" Margin="0">
+                    <TextBlock Classes="h2" HorizontalAlignment="Center">Пользователи в чате</TextBlock>
+                    <ListBox Background="#ECEFF1" Items="{Binding Members}">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <Grid RowDefinitions="*" ColumnDefinitions="*,Auto,Auto">
+                                    <TextBlock Classes="h2" Grid.Row="0" Grid.Column="0" Text="{Binding Username}" />
+                                    <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding Ip}" />
+                                    <TextBlock Grid.Row="0" Grid.Column="2" Text="{Binding Port}" />
+                                </Grid>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </StackPanel>
+            </ScrollViewer>
+            <GridSplitter Grid.Column="1" Background="#455A64" ResizeDirection="Columns" />
+            <ScrollViewer Grid.Column="2" VerticalScrollBarVisibility="Auto">
+                <ListBox Background="#ECEFF1" Items="{Binding Messages}">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding }"/>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </ScrollViewer>
+        </Grid>
+    </DockPanel>
+</UserControl>

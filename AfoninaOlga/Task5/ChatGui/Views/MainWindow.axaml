@@ -1,0 +1,34 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:ChatGui.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:reactiveUi="http://reactiveui.net"
+        xmlns:chatGui="clr-namespace:ChatGui"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="ChatGui.Views.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Icon="/Assets/avalonia-logo.ico"
+        Title="ChatGui">
+
+    <Design.DataContext>
+        <vm:MainWindowViewModel />
+    </Design.DataContext>
+    
+    <reactiveUi:RoutedViewHost Router="{Binding Router}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+        <reactiveUi:RoutedViewHost.DefaultContent>
+            <StackPanel>
+                <!-- <TextBlock Text="{Binding Title}" /> -->
+                <TextBlock Classes="h1" Text="Добро пожаловать в P2P Чат" />
+                <Grid ColumnDefinitions="Auto,Auto">
+                    <Button Grid.Row="0" Grid.Column="0" Command="{Binding GoNewChat}">Создать новый чат</Button>
+                    <Button Grid.Row="0" Grid.Column="1" Command="{Binding GoConnectToChat}">Подключиться к существующему чату</Button>
+                </Grid>
+            </StackPanel>
+        </reactiveUi:RoutedViewHost.DefaultContent>
+        <reactiveUi:RoutedViewHost.ViewLocator>
+            <chatGui:AppViewLocator />
+        </reactiveUi:RoutedViewHost.ViewLocator>
+    </reactiveUi:RoutedViewHost>
+
+</Window>

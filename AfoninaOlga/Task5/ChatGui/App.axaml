@@ -1,0 +1,27 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="ChatGui.App">
+
+    <Application.Styles>
+        <FluentTheme Mode="Light"/>
+        <Style Selector="TextBlock.h1">
+            <Setter Property="FontSize" Value="24"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+        </Style>
+        <Style Selector="TextBlock.h2">
+            <Setter Property="FontWeight" Value="SemiBold"/>
+        </Style>
+        <Style Selector="Window">
+            <Setter Property="Background" Value="#ECEFF1"/>
+        </Style>
+        <Style Selector="StackPanel">
+            <Setter Property="Margin" Value="10, 0"/>
+        </Style>
+        <Style Selector="Button">
+            <Setter Property="Background" Value="#455A64"/>
+            <Setter Property="Foreground" Value="#ECEFF1"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Margin" Value="0, 5, 0, 0"/>
+        </Style>
+    </Application.Styles>
+</Application>

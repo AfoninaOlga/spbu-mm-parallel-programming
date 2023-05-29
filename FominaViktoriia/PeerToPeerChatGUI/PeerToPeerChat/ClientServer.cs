@@ -17,20 +17,21 @@ namespace PeerToPeerChat
             _socket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
             var endPoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 8000);
             _socket.Bind(endPoint);
+            _socket.Listen();
 
             _ipEndPoints = new();
         }
 
-        public async Task ReceiveAsync(byte[] buffer)
+        public void Receive(byte[] buffer)
         {
-            var socket = await _socket.AcceptAsync();
-            await socket.ReceiveAsync(buffer);
+            var socket = _socket.Accept();
+            socket.Receive(buffer);
 
             foreach (var iep in _ipEndPoints)
             {
                 var endPoint = $"ip:{iep.Address};port:{iep.Port}";
                 var endPointBytes = Encoding.UTF8.GetBytes(endPoint);
-                await socket.SendAsync(endPointBytes);
+                socket.Send(endPointBytes);
             }
 
             var ipEndPoint = ParseIpAndPort(buffer);
@@ -43,18 +44,18 @@ namespace PeerToPeerChat
             socket.Close();
         }
 
-        public async Task SendAsync(byte[] buffer)
+        public void Send(byte[] buffer)
         {
             foreach (var iep in _ipEndPoints)
             {
                 var socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
                 socket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
                 socket.Bind(iep);
-                await socket.SendAsync(buffer);
+                socket.Send(buffer);
             }
         }
 
-        public async Task ConnectAsync(EndPoint endPoint) => await _socket.ConnectAsync(endPoint);
+        public void Connect(EndPoint endPoint) => _socket.Connect(endPoint);
 
         public void Close() => _socket.Close();
 

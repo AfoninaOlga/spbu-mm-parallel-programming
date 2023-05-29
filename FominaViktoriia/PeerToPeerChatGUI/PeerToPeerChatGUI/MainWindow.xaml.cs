@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System.Threading.Tasks;
+using System.Windows;
 
 namespace PeerToPeerChatGUI
 {
@@ -13,17 +14,20 @@ namespace PeerToPeerChatGUI
         {
             _viewModel = new ClientServerViewModel();
             _viewModel.ThrowError += (sender, message) => ShowMessage(message);
-
             DataContext = _viewModel;
             InitializeComponent();
-            _viewModel.ReceiveAsync();
+            var task = new Task(() =>
+            {
+                _viewModel.ReceiveAsync();
+            });
+            task.Start();            
         }
 
         private async void ConnectAsync_Click(object sender, RoutedEventArgs e) =>
                 await _viewModel.ConnectAsync();
 
-        private async void SendAsync_Click(object sender, RoutedEventArgs e) =>
-                await _viewModel.SendAsync();
+        private void SendAsync_Click(object sender, RoutedEventArgs e) =>
+                _viewModel.SendAsync();
 
         private static void ShowMessage(string errorMessage) =>
                 MessageBox.Show(errorMessage, "Error message");

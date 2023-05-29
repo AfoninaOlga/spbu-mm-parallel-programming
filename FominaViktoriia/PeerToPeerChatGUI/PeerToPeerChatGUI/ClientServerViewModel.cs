@@ -25,7 +25,7 @@ namespace PeerToPeerChatGUI
 
         internal string Host { get; set; } = "127.0.0.1";
 
-        internal int Port { get; set; } = 8000;
+        internal int Port { get; set; } = 8001;
 
         internal string Message { get; set; } = "";
 
@@ -42,20 +42,22 @@ namespace PeerToPeerChatGUI
 
                 var ipEndPoint = new IPEndPoint(ipAddress!, Port);
 
-                await _clientServer.ConnectAsync(ipEndPoint!);
-                MessageBox.Show($"Connected to {ipEndPoint}");
+                _clientServer.Connect(ipEndPoint!);
+                MessageBox.Show($"Connected to {ipEndPoint}\n");
             }
             catch (Exception e)
             {
-                ThrowError(this, e.Message);
+                var ipIsParsed = IPAddress.TryParse(Host, out var ipAddress);
+                var ipEndPoint = new IPEndPoint(ipAddress!, Port);
+                ThrowError(this, $"Tried to connect to {ipEndPoint}" + e.Message);
             }
         }
 
-        internal async Task SendAsync()
+        internal void SendAsync()
         {
             try
             {
-                await _clientServer.SendAsync(Encoding.UTF8.GetBytes(Message));
+                _clientServer.Send(Encoding.UTF8.GetBytes(Message));
                 MessagesHistory.Add(Message);
             }
             catch (Exception e)
@@ -64,12 +66,12 @@ namespace PeerToPeerChatGUI
             }            
         }
 
-        internal async Task ReceiveAsync()
+        internal void ReceiveAsync()
         {
             while (true)
             {
                 var buffer = new byte[_bufferSize];
-                await _clientServer.ReceiveAsync(buffer);
+                _clientServer.Receive(buffer);
 
                 var message = Encoding.UTF8.GetString(buffer);
                 MessagesHistory.Add(message);

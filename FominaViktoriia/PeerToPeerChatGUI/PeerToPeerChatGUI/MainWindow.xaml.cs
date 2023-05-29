@@ -16,17 +16,18 @@ namespace PeerToPeerChatGUI
             _viewModel.ThrowError += (sender, message) => ShowMessage(message);
             DataContext = _viewModel;
             InitializeComponent();
+
             var task = new Task(() =>
             {
-                _viewModel.ReceiveAsync();
+                _viewModel.Receive();
             });
-            task.Start();            
+            task.Start();
         }
 
-        private void ConnectAsync_Click(object sender, RoutedEventArgs e) => _viewModel.ConnectAsync();
+        private void ConnectAsync_Click(object sender, RoutedEventArgs e) => _viewModel.Connect();
 
         private void SendAsync_Click(object sender, RoutedEventArgs e) =>
-                _viewModel.SendAsync();
+                _viewModel.Send();
 
         private static void ShowMessage(string errorMessage) =>
                 MessageBox.Show(errorMessage, "Error message");

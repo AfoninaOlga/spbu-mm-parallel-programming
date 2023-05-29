@@ -4,13 +4,12 @@ using System.ComponentModel;
 using System.Net;
 using System.Runtime.CompilerServices;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using PeerToPeerChat;
 
 namespace PeerToPeerChatGUI
 {
-    internal class ClientServerViewModel : IDisposable, INotifyPropertyChanged
+    public class ClientServerViewModel : IDisposable, INotifyPropertyChanged
     {
         private readonly ClientServer _clientServer = new();
 
@@ -18,9 +17,9 @@ namespace PeerToPeerChatGUI
 
         public ObservableCollection<string> MessagesHistory { get; private set; } = new();
 
-        internal delegate void ShowErrorMessage(object sender, string message);
+        public delegate void ShowErrorMessage(object sender, string message);
 
-        internal event ShowErrorMessage ThrowError = (_, __) => { };
+        public event ShowErrorMessage ThrowError = (_, __) => { };
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -38,7 +37,7 @@ namespace PeerToPeerChatGUI
 
         public string Message { get; set; } = "";
 
-        internal void ConnectAsync()
+        public void Connect()
         {
             try
             {
@@ -52,23 +51,22 @@ namespace PeerToPeerChatGUI
                 var ipEndPoint = new IPEndPoint(ipAddress!, Port);
 
                 _clientServer.Connect(ipEndPoint!);
-                MessageBox.Show($"Connected to {ipEndPoint}\n");
+                MessageBox.Show($"Added [{ipEndPoint}] to the list of hosts we will connect to\n");
             }
             catch (Exception e)
             {
                 var ipIsParsed = IPAddress.TryParse(Host, out var ipAddress);
                 var ipEndPoint = new IPEndPoint(ipAddress!, Port);
-                ThrowError(this, $"Tried to connect to {ipEndPoint}" + e.Message);
+                ThrowError(this, e.Message);
             }
         }
 
-        internal void SendAsync()
+        public void Send()
         {
             try
             {
                 _clientServer.Send(Encoding.UTF8.GetBytes(Message));
                 MessagesHistory.Add(Message);
-                MessageBox.Show("Message sent successfully");
             }
             catch (Exception e)
             {
@@ -76,7 +74,7 @@ namespace PeerToPeerChatGUI
             }            
         }
 
-        internal void ReceiveAsync()
+        public void Receive()
         {
             while (true)
             {
@@ -84,8 +82,7 @@ namespace PeerToPeerChatGUI
                 _clientServer.Receive(buffer);
 
                 var message = Encoding.UTF8.GetString(buffer);
-                MessagesHistory.Add(message);
-                Task.Delay(1000).Wait();
+                App.Current.Dispatcher.Invoke(() => MessagesHistory.Add(message));
             }
         }
 

@@ -46,7 +46,7 @@
                 FontWeight="DemiBold"
                 Height="30" 
                 Width="60"
-                Click="ConnectAsync_Click" Margin="61,15,68,-10" Grid.Column="2">
+                Click="Connect_Click" Margin="61,15,68,-10" Grid.Column="2">
                 <Button.Resources>
                     <Style TargetType="Border">
                         <Setter Property="CornerRadius" Value="2"></Setter>
@@ -84,7 +84,7 @@
                 FontWeight="DemiBold"
                 Height="30" 
                 Width="60"
-                Click="SendAsync_Click" Margin="61,63,68,-58" Grid.Column="1">
+                Click="Send_Click" Margin="61,63,68,-58" Grid.Column="1">
                 <Button.Resources>
                     <Style TargetType="Border">
                         <Setter Property="CornerRadius" Value="2"></Setter>

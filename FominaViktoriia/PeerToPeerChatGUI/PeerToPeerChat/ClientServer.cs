@@ -46,13 +46,17 @@ namespace PeerToPeerChat
 
         public void Send(byte[] buffer)
         {
+            if (_ipEndPoints.IsEmpty)
+            {
+                throw new InvalidOperationException("You did not specified the host to connect to");
+            }
+
             foreach (var iep in _ipEndPoints)
             {
                 var socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
                 socket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
                 socket.Connect(iep);
                 socket.Send(buffer);
-                Task.Delay(1000);
                 socket.Close();
             }
         }

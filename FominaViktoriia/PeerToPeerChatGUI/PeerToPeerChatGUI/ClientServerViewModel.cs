@@ -2,6 +2,7 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Net;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -15,7 +16,7 @@ namespace PeerToPeerChatGUI
 
         private readonly int _bufferSize = 1024;
 
-        internal ObservableCollection<string> MessagesHistory { get; private set; } = new();
+        public ObservableCollection<string> MessagesHistory { get; private set; } = new();
 
         internal delegate void ShowErrorMessage(object sender, string message);
 
@@ -23,13 +24,21 @@ namespace PeerToPeerChatGUI
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
-        internal string Host { get; set; } = "192.168.0.5";
+        public void OnPropertyChanged([CallerMemberName] string prop = "")
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
+        }
 
-        internal int Port { get; set; } = 8000;
+        protected virtual void NotifyPropertyChanged([CallerMemberName] string propertyName = "")
+                => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
-        internal string Message { get; set; } = "";
+        public string Host { get; set; } = "192.168.0.5";
 
-        internal async Task ConnectAsync()
+        public int Port { get; set; } = 8000;
+
+        public string Message { get; set; } = "";
+
+        internal void ConnectAsync()
         {
             try
             {

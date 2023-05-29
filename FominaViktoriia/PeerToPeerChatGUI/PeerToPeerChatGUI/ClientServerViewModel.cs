@@ -23,9 +23,9 @@ namespace PeerToPeerChatGUI
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
-        internal string Host { get; set; } = "127.0.0.1";
+        internal string Host { get; set; } = "192.168.0.5";
 
-        internal int Port { get; set; } = 8001;
+        internal int Port { get; set; } = 8000;
 
         internal string Message { get; set; } = "";
 

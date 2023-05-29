@@ -15,30 +15,29 @@ namespace PeerToPeerChat
         {
             _socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             _socket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
-            var endPoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 8000);
+            var endPoint = new IPEndPoint(IPAddress.Parse("0.0.0.0"), 8000);
             _socket.Bind(endPoint);
-            _socket.Listen();
 
             _ipEndPoints = new();
         }
 
         public void Receive(byte[] buffer)
         {
+            _socket.Listen();
             var socket = _socket.Accept();
             socket.Receive(buffer);
-
-            foreach (var iep in _ipEndPoints)
-            {
-                var endPoint = $"ip:{iep.Address};port:{iep.Port}";
-                var endPointBytes = Encoding.UTF8.GetBytes(endPoint);
-                socket.Send(endPointBytes);
-            }
 
             var ipEndPoint = ParseIpAndPort(buffer);
 
             if (ipEndPoint != null && !_ipEndPoints.Contains(ipEndPoint))
             {
                 _ipEndPoints.Add(ipEndPoint);
+                foreach (var iep in _ipEndPoints)
+                {
+                    var endPoint = $"ip:{iep.Address};port:{iep.Port}";
+                    var endPointBytes = Encoding.UTF8.GetBytes(endPoint);
+                    socket.Send(endPointBytes);
+                }
             }
 
             socket.Close();
@@ -50,12 +49,15 @@ namespace PeerToPeerChat
             {
                 var socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
                 socket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
-                socket.Bind(iep);
+                socket.Connect(iep);
                 socket.Send(buffer);
             }
         }
 
-        public void Connect(EndPoint endPoint) => _socket.Connect(endPoint);
+        public void Connect(IPEndPoint endPoint)
+        {
+            _ipEndPoints.Add(endPoint);
+        }
 
         public void Close() => _socket.Close();
 

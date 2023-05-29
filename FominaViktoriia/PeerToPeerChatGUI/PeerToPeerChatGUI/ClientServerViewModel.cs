@@ -59,6 +59,7 @@ namespace PeerToPeerChatGUI
             {
                 _clientServer.Send(Encoding.UTF8.GetBytes(Message));
                 MessagesHistory.Add(Message);
+                MessageBox.Show("Message sent successfully");
             }
             catch (Exception e)
             {

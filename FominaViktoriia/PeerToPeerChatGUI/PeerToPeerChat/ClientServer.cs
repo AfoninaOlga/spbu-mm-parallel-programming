@@ -17,27 +17,28 @@ namespace PeerToPeerChat
             _socket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
             var endPoint = new IPEndPoint(IPAddress.Parse("0.0.0.0"), 8000);
             _socket.Bind(endPoint);
+            _socket.Listen();
 
             _ipEndPoints = new();
         }
 
         public void Receive(byte[] buffer)
         {
-            _socket.Listen();
             var socket = _socket.Accept();
             socket.Receive(buffer);
 
             var ipEndPoint = ParseIpAndPort(buffer);
 
             if (ipEndPoint != null && !_ipEndPoints.Contains(ipEndPoint))
-            {
-                _ipEndPoints.Add(ipEndPoint);
+            {                
                 foreach (var iep in _ipEndPoints)
                 {
                     var endPoint = $"ip:{iep.Address};port:{iep.Port}";
                     var endPointBytes = Encoding.UTF8.GetBytes(endPoint);
                     socket.Send(endPointBytes);
                 }
+
+                _ipEndPoints.Add(ipEndPoint);
             }
 
             socket.Close();
@@ -51,6 +52,8 @@ namespace PeerToPeerChat
                 socket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
                 socket.Connect(iep);
                 socket.Send(buffer);
+                Task.Delay(1000);
+                socket.Close();
             }
         }
 

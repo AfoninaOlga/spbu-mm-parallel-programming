@@ -11,11 +11,15 @@ namespace PeerToPeerChat
 
         private readonly ConcurrentBag<IPEndPoint> _ipEndPoints;
 
+        private readonly string _ip = "0.0.0.0";
+
+        private readonly int _port = 8000;
+
         public ClientServer()
         {
             _socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             _socket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
-            var endPoint = new IPEndPoint(IPAddress.Parse("0.0.0.0"), 8000);
+            var endPoint = new IPEndPoint(IPAddress.Parse(_ip), _port);
             _socket.Bind(endPoint);
             _socket.Listen();
 
@@ -28,17 +32,17 @@ namespace PeerToPeerChat
             socket.Receive(buffer);
 
             var ipEndPoint = ParseIpAndPort(buffer);
+            if (ipEndPoint != null && ipEndPoint.Address.ToString().Equals(_ip))
+            {
+                if (socket.RemoteEndPoint is IPEndPoint remoteIPEndPoint)
+                {
+                    ipEndPoint.Address = remoteIPEndPoint.Address;
+                }
+            }
 
             if (ipEndPoint != null && !_ipEndPoints.Contains(ipEndPoint))
-            {                
-                foreach (var iep in _ipEndPoints)
-                {
-                    var endPoint = $"ip:{iep.Address};port:{iep.Port}";
-                    var endPointBytes = Encoding.UTF8.GetBytes(endPoint);
-                    socket.Send(endPointBytes);
-                }
-
-                _ipEndPoints.Add(ipEndPoint);
+            {
+                Connect(ipEndPoint);
             }
 
             socket.Close();
@@ -53,22 +57,47 @@ namespace PeerToPeerChat
 
             foreach (var iep in _ipEndPoints)
             {
-                var socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-                socket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
-                socket.Connect(iep);
-                socket.Send(buffer);
-                socket.Close();
+                SendToOne(buffer, iep);
             }
         }
 
-        public void Connect(IPEndPoint endPoint)
+        public void Connect(IPEndPoint ipEndPoint)
         {
-            _ipEndPoints.Add(endPoint);
+            if (ipEndPoint == null)
+            {
+                throw new Exception("Attempt to connect to null IPEndPoint");
+            }            
+
+            foreach (var iep in _ipEndPoints)
+            {
+                var endPointBytes = Encoding.UTF8.GetBytes($"ip:{iep.Address};port:{iep.Port}");
+                SendToOne(endPointBytes, ipEndPoint);
+            }
+
+            if (_socket.LocalEndPoint is IPEndPoint myiep)
+            {
+                var myEndPointBytes = Encoding.UTF8.GetBytes($"ip:{myiep.Address};port:{myiep.Port}");
+                SendToOne(myEndPointBytes, ipEndPoint);
+            }
+
+            if (!_ipEndPoints.Contains(ipEndPoint))
+            {
+                _ipEndPoints.Add(ipEndPoint);
+            }
         }
 
         public void Close() => _socket.Close();
 
         public void Dispose() => _socket.Dispose();
+
+        private static void SendToOne(byte[] buffer, IPEndPoint iep)
+        {
+            var socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            socket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
+            socket.Connect(iep);
+            socket.Send(buffer);
+            socket.Close();
+        }
 
         private static IPEndPoint? ParseIpAndPort(byte[] buffer)
         {

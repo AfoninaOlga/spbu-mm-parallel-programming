@@ -37,13 +37,22 @@ namespace PeerToPeerChat
 
             if (ipEndPoint != null && !_ipEndPoints.Contains(ipEndPoint))
             {
-                _ipEndPoints.Add(ipEndPoint);  
+                _ipEndPoints.Add(ipEndPoint);
             }
 
             socket.Close();
         }
 
-        public async Task SendAsync(byte[] buffer) => await _socket.SendAsync(buffer);
+        public async Task SendAsync(byte[] buffer)
+        {
+            foreach (var iep in _ipEndPoints)
+            {
+                var socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                socket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
+                socket.Bind(iep);
+                await socket.SendAsync(buffer);
+            }
+        }
 
         public async Task ConnectAsync(EndPoint endPoint) => await _socket.ConnectAsync(endPoint);
 

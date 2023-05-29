@@ -64,15 +64,17 @@ namespace PeerToPeerChatGUI
             }            
         }
 
-        internal async Task<string> ReceiveAsync()
+        internal async Task ReceiveAsync()
         {
-            var buffer = new byte[_bufferSize];
-            await _clientServer.ReceiveAsync(buffer);
-            
-            var message = Encoding.UTF8.GetString(buffer);
-            MessagesHistory.Add(message);
+            while (true)
+            {
+                var buffer = new byte[_bufferSize];
+                await _clientServer.ReceiveAsync(buffer);
 
-            return message;
+                var message = Encoding.UTF8.GetString(buffer);
+                MessagesHistory.Add(message);
+                Task.Delay(1000).Wait();
+            }
         }
 
         public void Dispose() => _clientServer.Dispose();

@@ -9,10 +9,6 @@ namespace PeerToPeerChat
     {
         private readonly Socket _socket;
 
-        private readonly CancellationTokenSource _cancellationTokenSource;
-
-        private readonly CancellationToken _cancellationToken;
-
         private readonly ConcurrentBag<IPEndPoint> _ipEndPoints;
 
         public ClientServer()
@@ -22,34 +18,29 @@ namespace PeerToPeerChat
             var endPoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 8000);
             _socket.Bind(endPoint);
 
-            _cancellationTokenSource = new();
-            _cancellationToken = _cancellationTokenSource.Token;
             _ipEndPoints = new();
         }
 
         public async Task ReceiveAsync(byte[] buffer)
         {
-            while (!_cancellationToken.IsCancellationRequested)
+            var socket = await _socket.AcceptAsync();
+            await socket.ReceiveAsync(buffer);
+
+            foreach (var iep in _ipEndPoints)
             {
-                var socket = await _socket.AcceptAsync();
-                await socket.ReceiveAsync(buffer);
-
-                foreach (var iep in _ipEndPoints)
-                {
-                    var endPoint = $"ip:{iep.Address};port:{iep.Port}";
-                    var endPointBytes = Encoding.UTF8.GetBytes(endPoint);
-                    await socket.SendAsync(endPointBytes);
-                }
-
-                var ipEndPoint = ParseIpAndPort(buffer);
-
-                if (ipEndPoint != null && !_ipEndPoints.Contains(ipEndPoint))
-                {
-                    _ipEndPoints.Add(ipEndPoint);  
-                }
-
-                socket.Close();
+                var endPoint = $"ip:{iep.Address};port:{iep.Port}";
+                var endPointBytes = Encoding.UTF8.GetBytes(endPoint);
+                await socket.SendAsync(endPointBytes);
             }
+
+            var ipEndPoint = ParseIpAndPort(buffer);
+
+            if (ipEndPoint != null && !_ipEndPoints.Contains(ipEndPoint))
+            {
+                _ipEndPoints.Add(ipEndPoint);  
+            }
+
+            socket.Close();
         }
 
         public async Task SendAsync(byte[] buffer) => await _socket.SendAsync(buffer);
@@ -57,8 +48,6 @@ namespace PeerToPeerChat
         public async Task ConnectAsync(EndPoint endPoint) => await _socket.ConnectAsync(endPoint);
 
         public void Close() => _socket.Close();
-
-        public void Stop() => _cancellationTokenSource.Cancel();
 
         public void Dispose() => _socket.Dispose();
 

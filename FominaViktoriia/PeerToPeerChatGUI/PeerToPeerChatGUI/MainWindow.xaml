@@ -71,7 +71,7 @@
             <TextBox 
                 x:Name="message"
                 Grid.Column="0" 
-                Text="{Binding Path=Message, TargetNullValue='127.0.0.1', UpdateSourceTrigger=PropertyChanged}"
+                Text="{Binding Path=Message, TargetNullValue='127.0.0.1', Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                 TextWrapping="Wrap"
                 AcceptsReturn="True"
                 VerticalScrollBarVisibility="Visible"

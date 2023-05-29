@@ -24,9 +24,9 @@ namespace PeerToPeerChatGUI
             task.Start();
         }
 
-        private void ConnectAsync_Click(object sender, RoutedEventArgs e) => _viewModel.Connect();
+        private void Connect_Click(object sender, RoutedEventArgs e) => _viewModel.Connect();
 
-        private void SendAsync_Click(object sender, RoutedEventArgs e) =>
+        private void Send_Click(object sender, RoutedEventArgs e) =>
                 _viewModel.Send();
 
         private static void ShowMessage(string errorMessage) =>

@@ -4,4 +4,4 @@
 - Number of request per minute: 30000
 - 12612 records by timeout in 30 seconds
 - Query Ratio Add:9%, Contains: 90%, Delete: 1% <br><br>
-![TimeOut + ACD.png](TimeOut + ACD.png "Delete operation")
+![TimeOutACD.png](TimeOutACD.png "Delete operation")

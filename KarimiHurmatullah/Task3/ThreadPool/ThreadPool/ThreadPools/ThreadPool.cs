@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using ThreadPool.IMyTasks;
 using ThreadPool.Strategy;
@@ -68,28 +71,20 @@ namespace ThreadPool.ThreadPool
         internal void ShareTasks(int workerId)
         {
             var size = workerThreads[workerId].TasksCount;
-            var workerThreadLength = workerThreads.Length;
-            int minimum, maximum;
 
             if (randomGenerator.Next(size + 1) == size)
             {
-                var markWorkerId = (workerId + randomGenerator.Next(workerThreadLength - 1)) % workerThreadLength;
-
-                if (markWorkerId <= workerId)
+                if (workerThreads.Length != 1)
                 {
-                    minimum = markWorkerId;
-                    maximum = workerId;
-                }
-                else
-                {
-                    minimum = workerId;
-                    maximum = markWorkerId;
-                }
-                lock (workerThreads[minimum])
-                {
-                    lock (workerThreads[maximum])
+                    var vId = (workerId + randomGenerator.Next(1, workerThreads.Length)) % workerThreads.Length;
+                    var (minimum, maximum) = workerId <= vId ? (workerId, vId) : (vId, workerId);
+                    lock (workerThreads[minimum])
                     {
-                        workerThreads[minimum].BalanceQueue(workerThreads[maximum]);
+                        lock (workerThreads[maximum])
+                        {
+                            workerThreads[minimum].BalanceQueue(workerThreads[maximum]);
+
+                        }
                     }
                 }
             }

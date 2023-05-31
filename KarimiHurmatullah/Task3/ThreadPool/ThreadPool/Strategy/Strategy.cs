@@ -58,20 +58,25 @@ namespace ThreadPool.Strategy
                     {
                         isTaskWaiting = false;
                         task?.Invoke();
-                        ExecuteTaskAndShareTask();
                     }
-                    else if (workStrategy == WorkStrategy.WorkStealing && myThreadPoolInstance.StealTasks(out task, Id))
+                    if (workStrategy == WorkStrategy.WorkStealing)
                     {
-                        isTaskWaiting = false;
+                        myThreadPoolInstance.StealTasks(out task, Id);
                         task?.Invoke();
-                        ExecuteTaskAndShareTask();
+                        isTaskWaiting = true;
+                    }
+                    else if (workStrategy == WorkStrategy.WorkSharing)
+                    {
+                        myThreadPoolInstance.ShareTasks(Id);
+                        task?.Invoke();
+                        isTaskWaiting = true;
                     }
                     else
                     {
                         Thread.Yield();
                     }
                 }
-                catch (OperationCanceledException)
+                catch (Exception)
                 {
                     break;
                 }
@@ -83,46 +88,25 @@ namespace ThreadPool.Strategy
             }
         }
 
-        internal void ExecuteTaskAndShareTask()
-        {
-            if (workStrategy == WorkStrategy.WorkSharing)
-            {
-                myThreadPoolInstance.ShareTasks(Id);
-            }
-            isTaskWaiting = true;
-        }
-
         internal bool StealTasks(out Action? task) => waitingTasksQueue.TryDequeue(out task);
 
-        internal void BalanceQueue(Strategy mark)
+        internal void BalanceQueue(Strategy victim)
         {
-            Strategy minimum, maximum;
-
-            if (this.waitingTasksQueue.Count < mark.waitingTasksQueue.Count)
-            {
-                minimum = this;
-                maximum = mark;
-            }
-            else
-            {
-                minimum = mark;
-                maximum = this;
-            }
-
-            var diff = maximum.waitingTasksQueue.Count - minimum.waitingTasksQueue.Count;
-
-            if (diff <= Threshold)
+            if (cancellationToken.IsCancellationRequested)
             {
                 return;
             }
-
-            while (maximum.waitingTasksQueue.Count > minimum.waitingTasksQueue.Count)
+            var (qMinimum, qMaximum) = waitingTasksQueue.Count <= victim.waitingTasksQueue.Count ? (this, victim) : (victim, this);
+            var diff = qMaximum.waitingTasksQueue.Count - qMinimum.waitingTasksQueue.Count;
+            if (diff > Threshold)
             {
-                maximum.waitingTasksQueue.TryDequeue(out var task);
-
-                if (task != null)
+                while (qMaximum.waitingTasksQueue.Count > qMinimum.waitingTasksQueue.Count)
                 {
-                    minimum.waitingTasksQueue.Enqueue(task);
+                    qMaximum.waitingTasksQueue.TryDequeue(out var task);
+                    if (task != null)
+                    {
+                        qMinimum.waitingTasksQueue.Enqueue(task);
+                    }
                 }
             }
         }

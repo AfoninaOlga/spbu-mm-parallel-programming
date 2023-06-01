@@ -1,4 +1,4 @@
-### CoarSet LoadTesting TimeOut + Add + Contains + Delete operations
+### FineGrained LoadTesting TimeOut + Add + Contains + Delete operations
 - Number of users: 8000
 - Each of users that make request: 10
 - Number of request per minute: 30000

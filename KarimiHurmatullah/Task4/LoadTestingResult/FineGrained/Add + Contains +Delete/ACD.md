@@ -1,4 +1,4 @@
-### CoarSet LoadTesting Add + Contains + Delete operations
+### FineGrainedSet LoadTesting Add + Contains + Delete operations
 - Number of users: 7000
 - Each of users that make request: 8
 - Number of request per minute: 1600

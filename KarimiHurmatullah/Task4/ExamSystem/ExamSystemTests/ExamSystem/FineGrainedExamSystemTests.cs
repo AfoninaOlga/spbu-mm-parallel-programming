@@ -11,21 +11,21 @@ using Assert = NUnit.Framework.Assert;
 namespace ExamSystem.ExamSystem.Tests
 {
     [TestClass()]
-    public class CoarseExamSystemTests
+    public class FineGrainedExamSystemTests
     {
-        private static readonly CoarseExamSystem coarseTest = new();
+        private static readonly FineGrainedExamSystem fineGrainedTest = new();
 
         [TestMethod()]
         public void AddOneValue()
         {
-            coarseTest.Add(1, 1);
+            fineGrainedTest.Add(1, 1);
             Assert.IsTrue(true);
         }
 
         [TestMethod()]
         public void CountOneAddedValue()
         {
-            var countedValue = coarseTest.Count;
+            var countedValue = fineGrainedTest.Count;
             if (countedValue == 1)
             {
                 Assert.IsTrue(true);
@@ -39,13 +39,13 @@ namespace ExamSystem.ExamSystem.Tests
         [TestMethod()]
         public void ContainsOneAddedValue()
         {
-            Assert.That(coarseTest.Contains(1, 1), Is.True);
+            Assert.That(fineGrainedTest.Contains(1, 1), Is.True);
         }
 
         [TestMethod()]
         public void RemoveOneAddedValue()
         {
-            coarseTest.Remove(1, 1);
+            fineGrainedTest.Remove(1, 1);
             Assert.IsTrue(true);
         }
 
@@ -58,7 +58,7 @@ namespace ExamSystem.ExamSystem.Tests
             {
                 var value1 = i;
                 var value2 = i * 3;
-                thread[i] = new Thread(() => coarseTest.Add(value1, value2));
+                thread[i] = new Thread(() => fineGrainedTest.Add(value1, value2));
                 thread[i].Start();
             }
 
@@ -79,7 +79,7 @@ namespace ExamSystem.ExamSystem.Tests
             {
                 var value1 = i;
                 var value2 = i * 3;
-                thread[i] = new Thread(() => coarseTest.Contains(value1, value2));
+                thread[i] = new Thread(() => fineGrainedTest.Contains(value1, value2));
                 thread[i].Start();
             }
 
@@ -100,7 +100,7 @@ namespace ExamSystem.ExamSystem.Tests
             {
                 var value1 = i;
                 var value2 = i * 3;
-                thread[i] = new Thread(() => coarseTest.Remove(value1, value2));
+                thread[i] = new Thread(() => fineGrainedTest.Remove(value1, value2));
                 thread[i].Start();
             }
 
